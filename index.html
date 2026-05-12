@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI Dashboard - 1:1 Replication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.378.0/font/lucide.min.css">
+    <style>
+        body {
+            background-color: #1a1c24;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .dashboard-card {
+            background: linear-gradient(135deg, #252833 0%, #1e2129 100%);
+            border: 1px solid #3a3f4b;
+            position: relative;
+        }
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            border-top: 2px solid #e3b341;
+            border-left: 2px solid #e3b341;
+        }
+        .dashboard-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            border-bottom: 2px solid #e3b341;
+            border-right: 2px solid #e3b341;
+        }
+        .card-corner-tr {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            border-top: 2px solid #e3b341;
+            border-right: 2px solid #e3b341;
+        }
+        .card-corner-bl {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            border-bottom: 2px solid #e3b341;
+            border-left: 2px solid #e3b341;
+        }
+        .text-muted { color: #a0a0a0; }
+        .text-accent { color: #e3b341; }
+        .bg-card-dark { background-color: #14161d; }
+
+        .nav-shell {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(20, 22, 29, 0.85) 0%, rgba(8, 10, 16, 0.85) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.18);
+            box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.08), 0 10px 24px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+        }
+        .nav-shell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -20%;
+            width: 140%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.85), rgba(59, 130, 246, 0.55), transparent);
+            filter: blur(0.2px);
+            opacity: 0.75;
+        }
+        .nav-shell::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -20%;
+            width: 140%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.35), transparent);
+            opacity: 0.5;
+        }
+        .nav-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: #a0a0a0;
+            transition: background 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+            cursor: pointer;
+            user-select: none;
+        }
+        .nav-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .nav-btn.active {
+            color: #ffffff;
+            background: linear-gradient(180deg, rgba(37, 99, 235, 0.85) 0%, rgba(56, 189, 248, 0.18) 100%);
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.22), inset 0 0 0 1px rgba(147, 197, 253, 0.18);
+        }
+        .nav-btn.active::after {
+            content: '';
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            bottom: -10px;
+            height: 14px;
+            background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.55), transparent 70%);
+            filter: blur(8px);
+            opacity: 0.9;
+        }
+        
+        .indicator-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .indicator-card:hover {
+            transform: translateY(-4px);
+        }
+        .indicator-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            filter: blur(40px);
+            border-radius: 50%;
+            margin-right: -20px;
+            margin-top: -20px;
+        }
+    </style>
+</head>
+<body class="p-6">
+    <!-- Header -->
+    <header class="flex justify-between items-start mb-8">
+        <div class="flex flex-col gap-3">
+            <div class="flex items-center gap-3">
+                <div class="p-2 dashboard-card rounded-lg">
+                    <i class="lucide-settings text-accent"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight">驾驶舱</h1>
+            </div>
+
+            <nav class="nav-shell">
+                <div onclick="switchPage('overview')" id="nav-overview" class="nav-btn">
+                    <i class="lucide-layout-dashboard text-sm"></i>
+                    <span>概 览</span>
+                </div>
+                <div onclick="switchPage('purchase')" id="nav-purchase" class="nav-btn">
+                    <i class="lucide-shopping-cart text-sm"></i>
+                    <span>采 购</span>
+                </div>
+                <div onclick="switchPage('sales')" id="nav-sales" class="nav-btn">
+                    <i class="lucide-bar-chart-3 text-sm"></i>
+                    <span>销 售</span>
+                </div>
+                <div onclick="switchPage('inventory')" id="nav-inventory" class="nav-btn">
+                    <i class="lucide-box text-sm"></i>
+                    <span>库 存</span>
+                </div>
+            </nav>
+        </div>
+
+        <div class="flex items-center gap-4 dashboard-card px-4 py-2 rounded-lg text-sm">
+            <div class="flex items-center gap-2">
+                <span class="text-muted">年月</span>
+                <div class="flex gap-1 items-center bg-card-dark px-2 py-1 rounded border border-[#3a3f4b]">
+                    <span class="text-accent">2026</span>
+                    <span class="text-xs text-muted">年</span>
+                    <span class="ml-2 text-accent">1</span>
+                    <span class="text-xs text-muted">月</span>
+                    <span class="ml-1 text-muted">▼</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Area -->
+    <div id="page-overview" class="hidden">
+        <!-- KPI Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-package text-blue-400"></i>
+                    <span>毛利额</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-blue-400">136.24</span>
+                    <span class="text-sm text-muted">万</span>
+                </div>
+                <div class="flex gap-4 mt-2 text-xs">
+                    <div class="flex items-center gap-1">
+                        <span class="text-muted">同比</span>
+                        <span class="text-green-500">8.25% ↑</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-muted">环比</span>
+                        <span class="text-green-500">47.46% ↑</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-trending-up text-accent"></i>
+                    <span>毛利率</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-accent">28.15%</span>
+                </div>
+                <div class="flex gap-4 mt-2 text-xs">
+                    <div class="flex items-center gap-1">
+                        <span class="text-muted">同比</span>
+                        <span class="text-red-500">-1.83% ↓</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-muted">环比</span>
+                        <span class="text-green-500">1.50% ↑</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-users text-orange-400"></i>
+                    <span>战略客户毛利贡献度</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-orange-400">41.26%</span>
+                </div>
+                <div class="flex gap-4 mt-2 text-xs">
+                    <div class="flex items-center gap-1">
+                        <span class="text-muted">同比</span>
+                        <span class="text-green-500">27.36% ↑</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-muted">环比</span>
+                        <span class="text-green-500">84.05% ↑</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-layout-dashboard text-purple-400"></i>
+                    <span>亏损订单毛利额</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-purple-400">-4.91</span>
+                    <span class="text-sm text-muted">万</span>
+                </div>
+                <div class="flex gap-4 mt-2 text-xs">
+                    <div class="flex items-center gap-1">
+                        <span class="text-muted">同比</span>
+                        <span class="text-green-500">57.80% ↑</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-muted">环比</span>
+                        <span class="text-green-500">81.15% ↑</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-pie-chart text-green-400"></i>
+                    <span>成熟期产品毛利贡献度</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-green-400">23.68%</span>
+                </div>
+                <div class="flex gap-4 mt-2 text-xs">
+                    <div class="flex items-center gap-1">
+                        <span class="text-muted">同比</span>
+                        <span class="text-red-500">-25.26% ↓</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-muted">环比</span>
+                        <span class="text-green-500">21.53% ↑</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div>
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-trending-up text-accent"></i>
+                    <span>毛利额月度趋势</span>
+                </div>
+                <div class="dashboard-card p-4 h-[300px]" id="trendChart"></div>
+            </div>
+            <div>
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-pie-chart text-accent"></i>
+                    <span>产品大类毛利额贡献度</span>
+                </div>
+                <div class="dashboard-card p-4 h-[300px]" id="pieChart"></div>
+            </div>
+            <div>
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-users text-accent"></i>
+                    <span>客户类型</span>
+                </div>
+                <div class="dashboard-card p-4 h-[300px]" id="clientChart"></div>
+            </div>
+        </div>
+
+        <!-- Table Row -->
+        <div>
+            <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                <i class="lucide-package text-accent"></i>
+                <span>产品分析</span>
+            </div>
+            <div class="dashboard-card overflow-hidden">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead class="bg-[#2d313d] text-accent">
+                        <tr>
+                            <th class="p-3 border-b border-[#3a3f4b]">产品名称</th>
+                            <th class="p-3 border-b border-[#3a3f4b]">毛利率变动额</th>
+                            <th class="p-3 border-b border-[#3a3f4b]">毛利额变动率</th>
+                            <th class="p-3 border-b border-[#3a3f4b]">毛利额贡献度</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">产品4</td><td class="p-3 border-b border-[#3a3f4b]">1.15%</td><td class="p-3 border-b border-[#3a3f4b]">181.62%</td><td class="p-3 border-b border-[#3a3f4b] flex justify-between"><span>20.85%</span><span class="text-red-500">↑</span></td></tr>
+                        <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">产品2</td><td class="p-3 border-b border-[#3a3f4b]">1.72%</td><td class="p-3 border-b border-[#3a3f4b]">215.19%</td><td class="p-3 border-b border-[#3a3f4b] flex justify-between"><span>12.21%</span><span class="text-red-500">↑</span></td></tr>
+                        <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">产品5</td><td class="p-3 border-b border-[#3a3f4b]">0.95%</td><td class="p-3 border-b border-[#3a3f4b]">130.49%</td><td class="p-3 border-b border-[#3a3f4b] flex justify-between"><span>15.98%</span><span class="text-red-500">↑</span></td></tr>
+                        <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">产品9</td><td class="p-3 border-b border-[#3a3f4b]">-3.36%</td><td class="p-3 border-b border-[#3a3f4b]">106.46%</td><td class="p-3 border-b border-[#3a3f4b] flex justify-between"><span>10.72%</span><span class="text-red-500">↑</span></td></tr>
+                        <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">产品10</td><td class="p-3 border-b border-[#3a3f4b]">-0.19%</td><td class="p-3 border-b border-[#3a3f4b]">40.15%</td><td class="p-3 border-b border-[#3a3f4b] flex justify-between"><span>17.69%</span><span class="text-green-500">↓</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase Page -->
+    <div id="page-purchase">
+        <!-- KPI Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-dollar-sign text-blue-400"></i>
+                    <span>采购总金额</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-blue-400">1,380</span>
+                    <span class="text-sm text-muted">万</span>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-scale text-accent"></i>
+                    <span>采购重量</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-accent">9,200</span>
+                    <span class="text-sm text-muted">吨</span>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-file-text text-green-400"></i>
+                    <span>采购合同数</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-green-400">156</span>
+                    <span class="text-sm text-muted">份</span>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-dollar-sign text-purple-400"></i>
+                    <span>已付金额</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-purple-400">980</span>
+                    <span class="text-sm text-muted">万</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicators + Chart Row - 5:5 Split -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Key Indicators -->
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-trending-up text-accent"></i>
+                    <span>采购额重点指标</span>
+                </div>
+                <div class="dashboard-card p-4 flex flex-col gap-4 h-[312px]">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <div class="grid grid-cols-4 gap-3">
+                        <div class="relative overflow-hidden rounded-lg p-2 bg-gradient-to-br from-blue-600 to-blue-400 shadow-lg shadow-blue-500/20 flex flex-col items-center justify-center gap-1">
+                            <i class="lucide-rocket text-white" style="font-size:18px"></i>
+                            <span class="text-[10px] text-white/80 font-medium">当月值</span>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-base font-bold text-white">490.24</span>
+                                <span class="text-[10px] text-white/70">万</span>
+                            </div>
+                        </div>
+                        <div class="relative overflow-hidden rounded-lg p-2 bg-gradient-to-br from-purple-600 to-purple-400 shadow-lg shadow-purple-500/20 flex flex-col items-center justify-center gap-1">
+                            <i class="lucide-alert-triangle text-white" style="font-size:18px"></i>
+                            <span class="text-[10px] text-white/80 font-medium">年度累计值</span>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-base font-bold text-white">4902</span>
+                                <span class="text-[10px] text-white/70">万</span>
+                            </div>
+                        </div>
+                        <div class="relative overflow-hidden rounded-lg p-2 bg-gradient-to-br from-green-600 to-green-400 shadow-lg shadow-green-500/20 flex flex-col items-center justify-center gap-1">
+                            <i class="lucide-clipboard-check text-white" style="font-size:18px"></i>
+                            <span class="text-[10px] text-white/80 font-medium">年度预算</span>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-base font-bold text-white">6271</span>
+                                <span class="text-[10px] text-white/70">万</span>
+                            </div>
+                        </div>
+                        <div class="relative overflow-hidden rounded-lg p-2 bg-gradient-to-br from-orange-600 to-orange-400 shadow-lg shadow-orange-500/20 flex flex-col items-center justify-center gap-1">
+                            <i class="lucide-clock text-white" style="font-size:18px"></i>
+                            <span class="text-[10px] text-white/80 font-medium">预实差额</span>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-base font-bold text-white">1369</span>
+                                <span class="text-[10px] text-white/70">万</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1 mt-auto">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-muted">年度完成率</span>
+                            <span class="text-accent font-bold">78.18%</span>
+                        </div>
+                        <div class="w-full h-2 bg-card-dark rounded-full overflow-hidden border border-[#3a3f4b]/50 p-[2px]">
+                            <div class="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-cyan-300 rounded-full shadow-[0_0_8px_rgba(56,189,248,0.5)]" style="width: 78.18%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trend Chart -->
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-calendar text-accent"></i>
+                    <span>月采购量趋势</span>
+                </div>
+                <div class="dashboard-card p-4">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <div id="purchaseTrendChart" style="height:280px"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supplier Ranking -->
+        <div>
+            <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                <i class="lucide-shopping-cart text-accent"></i>
+                <span>供应商采购金额排名 Top5</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="dashboard-card p-4">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <div id="supplierRankChart" style="height:240px"></div>
+                </div>
+                <div class="dashboard-card overflow-hidden">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <table class="w-full text-sm">
+                        <thead class="bg-[#2d313d] text-accent">
+                            <tr>
+                                <th class="p-3 border-b border-[#3a3f4b] text-left">排名</th>
+                                <th class="p-3 border-b border-[#3a3f4b] text-left">供应商名称</th>
+                                <th class="p-3 border-b border-[#3a3f4b] text-right">采购金额</th>
+                                <th class="p-3 border-b border-[#3a3f4b] text-right">占比</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="hover:bg-white/5">
+                                <td class="p-3 border-b border-[#3a3f4b]"><span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold" style="background:#ea7ccc30;color:#ea7ccc">1</span></td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商A</td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">720万</td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:24.5%;background:#ea7ccc"></div></div><span>24.5%</span></div></td>
+                            </tr>
+                            <tr class="hover:bg-white/5">
+                                <td class="p-3 border-b border-[#3a3f4b]"><span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold" style="background:#9a60b430;color:#9a60b4">2</span></td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商B</td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">560万</td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:19.1%;background:#9a60b4"></div></div><span>19.1%</span></div></td>
+                            </tr>
+                            <tr class="hover:bg-white/5">
+                                <td class="p-3 border-b border-[#3a3f4b]"><span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold" style="background:#e3b34130;color:#e3b341">3</span></td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商C</td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">420万</td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:14.3%;background:#e3b341"></div></div><span>14.3%</span></div></td>
+                            </tr>
+                            <tr class="hover:bg-white/5">
+                                <td class="p-3 border-b border-[#3a3f4b]"><span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold" style="background:#4c8bf530;color:#4c8bf5">4</span></td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商D</td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">350万</td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:11.9%;background:#4c8bf5"></div></div><span>11.9%</span></div></td>
+                            </tr>
+                            <tr class="hover:bg-white/5">
+                                <td class="p-3 border-b border-[#3a3f4b]"><span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold" style="background:#3ba27230;color:#3ba272">5</span></td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商E</td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">280万</td>
+                                <td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:9.5%;background:#3ba272"></div></div><span>9.5%</span></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Analysis -->
+        <div>
+            <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                <i class="lucide-file-text text-accent"></i>
+                <span>采购商品分析</span>
+            </div>
+            <div class="dashboard-card overflow-hidden">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <table class="w-full text-sm">
+                    <thead class="bg-[#2d313d] text-accent">
+                        <tr>
+                            <th class="p-3 border-b border-[#3a3f4b] text-left">供应商</th>
+                            <th class="p-3 border-b border-[#3a3f4b] text-left">原产国</th>
+                            <th class="p-3 border-b border-[#3a3f4b] text-left">厂号</th>
+                            <th class="p-3 border-b border-[#3a3f4b] text-left">件套</th>
+                            <th class="p-3 border-b border-[#3a3f4b] text-left">品名</th>
+                            <th class="p-3 border-b border-[#3a3f4b] text-right">件数</th>
+                            <th class="p-3 border-b border-[#3a3f4b] text-right">重量(吨)</th>
+                            <th class="p-3 border-b border-[#3a3f4b] text-right">采购成本(万)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="hover:bg-white/5">
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商A</td>
+                            <td class="p-3 border-b border-[#3a3f4b]"><span class="px-2 py-0.5 rounded text-xs bg-blue-500/20 text-blue-400">澳大利亚</span></td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted font-mono text-xs">AUS-2024-001</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">A1</td>
+                            <td class="p-3 border-b border-[#3a3f4b]">澳牛腩块</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right">120</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right text-accent">24.5</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">86.5</td>
+                        </tr>
+                        <tr class="hover:bg-white/5">
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商A</td>
+                            <td class="p-3 border-b border-[#3a3f4b]"><span class="px-2 py-0.5 rounded text-xs bg-blue-500/20 text-blue-400">澳大利亚</span></td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted font-mono text-xs">AUS-2024-002</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">A2</td>
+                            <td class="p-3 border-b border-[#3a3f4b]">澳牛腱子肉</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right">85</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right text-accent">17.2</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">60.2</td>
+                        </tr>
+                        <tr class="hover:bg-white/5">
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商B</td>
+                            <td class="p-3 border-b border-[#3a3f4b]"><span class="px-2 py-0.5 rounded text-xs bg-green-500/20 text-green-400">巴西</span></td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted font-mono text-xs">BRA-2024-001</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">B1</td>
+                            <td class="p-3 border-b border-[#3a3f4b]">巴西去骨牛肉</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right">200</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right text-accent">42.0</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">126.0</td>
+                        </tr>
+                        <tr class="hover:bg-white/5">
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商C</td>
+                            <td class="p-3 border-b border-[#3a3f4b]"><span class="px-2 py-0.5 rounded text-xs bg-purple-500/20 text-purple-400">阿根廷</span></td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted font-mono text-xs">ARG-2024-001</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">C1</td>
+                            <td class="p-3 border-b border-[#3a3f4b]">阿牛后胸肉</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right">150</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right text-accent">31.5</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">94.5</td>
+                        </tr>
+                        <tr class="hover:bg-white/5">
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商D</td>
+                            <td class="p-3 border-b border-[#3a3f4b]"><span class="px-2 py-0.5 rounded text-xs bg-orange-500/20 text-orange-400">乌拉圭</span></td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted font-mono text-xs">URU-2024-001</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">D1</td>
+                            <td class="p-3 border-b border-[#3a3f4b]">乌牛肩肉</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right">95</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right text-accent">19.8</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">59.4</td>
+                        </tr>
+                        <tr class="hover:bg-white/5">
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商E</td>
+                            <td class="p-3 border-b border-[#3a3f4b]"><span class="px-2 py-0.5 rounded text-xs bg-cyan-500/20 text-cyan-400">新西兰</span></td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted font-mono text-xs">NZL-2024-001</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">E1</td>
+                            <td class="p-3 border-b border-[#3a3f4b]">新西兰羊排</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right">60</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right text-accent">12.0</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">48.0</td>
+                        </tr>
+                        <tr class="hover:bg-white/5">
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商A</td>
+                            <td class="p-3 border-b border-[#3a3f4b]"><span class="px-2 py-0.5 rounded text-xs bg-blue-500/20 text-blue-400">澳大利亚</span></td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted font-mono text-xs">AUS-2024-003</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">A3</td>
+                            <td class="p-3 border-b border-[#3a3f4b]">澳牛上脑</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right">75</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right text-accent">15.3</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">53.6</td>
+                        </tr>
+                        <tr class="hover:bg-white/5">
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">供应商B</td>
+                            <td class="p-3 border-b border-[#3a3f4b]"><span class="px-2 py-0.5 rounded text-xs bg-green-500/20 text-green-400">巴西</span></td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted font-mono text-xs">BRA-2024-002</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-muted">B2</td>
+                            <td class="p-3 border-b border-[#3a3f4b]">巴西牛碎肉</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right">180</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right text-accent">36.0</td>
+                            <td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">72.0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Page -->
+    <div id="page-sales" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-scale text-accent"></i>
+                    <span>销售重量</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-accent">92.5</span>
+                    <span class="text-sm text-muted">吨</span>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-dollar-sign text-blue-400"></i>
+                    <span>销售金额</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-blue-400">2,180</span>
+                    <span class="text-sm text-muted">万</span>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-percent text-green-400"></i>
+                    <span>毛利率</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-green-400">25.36</span>
+                    <span class="text-sm text-muted">%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div>
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-file-text text-accent"></i>
+                    <span>销售产品分析</span>
+                </div>
+                <div class="dashboard-card overflow-hidden">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <table class="w-full text-sm">
+                        <thead class="bg-[#2d313d] text-accent">
+                            <tr>
+                                <th class="p-3 border-b border-[#3a3f4b] text-left">品名</th>
+                                <th class="p-3 border-b border-[#3a3f4b] text-right">销售重量(吨)</th>
+                                <th class="p-3 border-b border-[#3a3f4b] text-right">销售金额(万)</th>
+                                <th class="p-3 border-b border-[#3a3f4b] text-right">毛利率</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">产品A</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent">18.6</td><td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">560</td><td class="p-3 border-b border-[#3a3f4b] text-right"><span class="px-2 py-0.5 rounded text-xs bg-green-500/15 text-green-400">28.4%</span></td></tr>
+                            <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">产品B</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent">14.2</td><td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">420</td><td class="p-3 border-b border-[#3a3f4b] text-right"><span class="px-2 py-0.5 rounded text-xs bg-green-500/15 text-green-400">26.1%</span></td></tr>
+                            <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">产品C</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent">10.8</td><td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">310</td><td class="p-3 border-b border-[#3a3f4b] text-right"><span class="px-2 py-0.5 rounded text-xs bg-green-500/15 text-green-400">24.7%</span></td></tr>
+                            <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">产品D</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent">8.1</td><td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">230</td><td class="p-3 border-b border-[#3a3f4b] text-right"><span class="px-2 py-0.5 rounded text-xs bg-green-500/15 text-green-400">22.9%</span></td></tr>
+                            <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">产品E</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent">6.5</td><td class="p-3 border-b border-[#3a3f4b] text-right font-bold text-accent">180</td><td class="p-3 border-b border-[#3a3f4b] text-right"><span class="px-2 py-0.5 rounded text-xs bg-green-500/15 text-green-400">21.3%</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-trophy text-accent"></i>
+                    <span>销售产品 Top5</span>
+                </div>
+                <div class="dashboard-card p-4">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <div id="salesProductTop5Chart" style="height:240px"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-users text-accent"></i>
+                    <span>销售客户 Top5</span>
+                </div>
+                <div class="dashboard-card p-4">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <div id="salesCustomerTop5Chart" style="height:240px"></div>
+                </div>
+                <div class="dashboard-card overflow-hidden">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <table class="w-full text-sm">
+                        <thead class="bg-[#2d313d] text-accent">
+                            <tr>
+                                <th class="p-3 border-b border-[#3a3f4b] text-left">排名</th>
+                                <th class="p-3 border-b border-[#3a3f4b] text-left">客户名称</th>
+                                <th class="p-3 border-b border-[#3a3f4b] text-right">销售金额(万)</th>
+                                <th class="p-3 border-b border-[#3a3f4b] text-right">占比</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b]"><span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold" style="background:#4c8bf530;color:#4c8bf5">1</span></td><td class="p-3 border-b border-[#3a3f4b] text-muted">客户A</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">620</td><td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:24.2%;background:#4c8bf5"></div></div><span>24.2%</span></div></td></tr>
+                            <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b]"><span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold" style="background:#e3b34130;color:#e3b341">2</span></td><td class="p-3 border-b border-[#3a3f4b] text-muted">客户B</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">460</td><td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:18.0%;background:#e3b341"></div></div><span>18.0%</span></div></td></tr>
+                            <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b]"><span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold" style="background:#3ba27230;color:#3ba272">3</span></td><td class="p-3 border-b border-[#3a3f4b] text-muted">客户C</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">340</td><td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:13.3%;background:#3ba272"></div></div><span>13.3%</span></div></td></tr>
+                            <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b]"><span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold" style="background:#9a60b430;color:#9a60b4">4</span></td><td class="p-3 border-b border-[#3a3f4b] text-muted">客户D</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">280</td><td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:11.0%;background:#9a60b4"></div></div><span>11.0%</span></div></td></tr>
+                            <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b]"><span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold" style="background:#ea7ccc30;color:#ea7ccc">5</span></td><td class="p-3 border-b border-[#3a3f4b] text-muted">客户E</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">220</td><td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:8.6%;background:#ea7ccc"></div></div><span>8.6%</span></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-map-pinned text-accent"></i>
+                    <span>销售区域分析</span>
+                </div>
+                <div class="dashboard-card p-4">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <div id="salesRegionAnalysisChart" style="height:240px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page-inventory" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-boxes text-accent"></i>
+                    <span>当前库存重量</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-accent">1,015</span>
+                    <span class="text-sm text-muted">吨</span>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-truck text-blue-400"></i>
+                    <span>在途库存</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-blue-400">260</span>
+                    <span class="text-sm text-muted">吨</span>
+                </div>
+            </div>
+            <div class="dashboard-card p-4 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="lucide-activity text-green-400"></i>
+                    <span>实时库存</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-1">
+                    <span class="text-2xl font-bold text-green-400">755</span>
+                    <span class="text-sm text-muted">吨</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-bar-chart-3 text-accent"></i>
+                    <span>出入库统计</span>
+                </div>
+                <div class="dashboard-card p-4">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <div id="inventoryInOutChart" style="height:240px"></div>
+                </div>
+            </div>
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-line-chart text-accent"></i>
+                    <span>历史库存分析</span>
+                </div>
+                <div class="dashboard-card p-4">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <div id="inventoryHistoryChart" style="height:240px"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                    <i class="lucide-map-pinned text-accent"></i>
+                    <span>库存仓库分布</span>
+                </div>
+                <div class="dashboard-card p-4">
+                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                    <div id="inventoryWarehouseChart" style="height:240px"></div>
+                </div>
+            </div>
+            <div class="dashboard-card overflow-hidden">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <table class="w-full text-sm">
+                    <thead class="bg-[#2d313d] text-accent">
+                        <tr>
+                            <th class="p-3 border-b border-[#3a3f4b] text-left">仓库</th>
+                            <th class="p-3 border-b border-[#3a3f4b] text-right">库存重量(吨)</th>
+                            <th class="p-3 border-b border-[#3a3f4b] text-right">占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">华东仓</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">320</td><td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:31.5%;background:#4c8bf5"></div></div><span>31.5%</span></div></td></tr>
+                        <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">华南仓</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">260</td><td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:25.6%;background:#e3b341"></div></div><span>25.6%</span></div></td></tr>
+                        <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">华北仓</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">210</td><td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:20.7%;background:#3ba272"></div></div><span>20.7%</span></div></td></tr>
+                        <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">西南仓</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">160</td><td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:15.8%;background:#9a60b4"></div></div><span>15.8%</span></div></td></tr>
+                        <tr class="hover:bg-white/5"><td class="p-3 border-b border-[#3a3f4b] text-muted">西北仓</td><td class="p-3 border-b border-[#3a3f4b] text-right text-accent font-bold">90</td><td class="p-3 border-b border-[#3a3f4b] text-right"><div class="flex items-center justify-end gap-2"><div class="w-16 h-1.5 bg-[#14161d] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:8.9%;background:#ea7ccc"></div></div><span>8.9%</span></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Page Switching Logic
+        function switchPage(pageId) {
+            ['overview', 'purchase', 'sales', 'inventory'].forEach(id => {
+                document.getElementById('page-' + id).classList.add('hidden');
+                const nav = document.getElementById('nav-' + id);
+                nav.classList.remove('active');
+            });
+
+            document.getElementById('page-' + pageId).classList.remove('hidden');
+            const activeNav = document.getElementById('nav-' + pageId);
+            activeNav.classList.add('active');
+
+            if (pageId === 'overview') {
+                setTimeout(() => {
+                    trendChart.resize();
+                    pieChart.resize();
+                    clientChart.resize();
+                }, 100);
+            } else if (pageId === 'purchase') {
+                setTimeout(() => {
+                    purchaseTrendChart.resize();
+                    supplierRankChart.resize();
+                }, 100);
+            } else if (pageId === 'sales') {
+                setTimeout(() => {
+                    if (!salesInited) initSalesCharts();
+                    salesProductTop5Chart.resize();
+                    salesCustomerTop5Chart.resize();
+                    salesRegionAnalysisChart.resize();
+                }, 100);
+            } else if (pageId === 'inventory') {
+                setTimeout(() => {
+                    if (!inventoryInited) initInventoryCharts();
+                    inventoryInOutChart.resize();
+                    inventoryHistoryChart.resize();
+                    inventoryWarehouseChart.resize();
+                }, 100);
+            }
+        }
+
+        // Overview Charts
+        const trendChart = echarts.init(document.getElementById('trendChart'));
+        trendChart.setOption({
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'axis' },
+            legend: { data: ['毛利额', '毛利率'], textStyle: { color: '#a0a0a0' }, right: 10 },
+            xAxis: { type: 'category', data: ['2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07'], axisLabel: { color: '#a0a0a0' } },
+            yAxis: [{ type: 'value', axisLabel: { color: '#a0a0a0' }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } } }, { type: 'value', axisLabel: { color: '#a0a0a0' }, splitLine: { show: false } }],
+            series: [
+                { name: '毛利额', type: 'bar', data: [80, 110, 100, 120, 136.24, 70], itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#e3b341' }, { offset: 1, color: '#b88a2d' }]) } },
+                { name: '毛利率', type: 'line', yAxisIndex: 1, data: [25, 27, 26, 28, 28.15, 26], itemStyle: { color: '#4c8bf5' } }
+            ]
+        });
+
+        const pieChart = echarts.init(document.getElementById('pieChart'));
+        pieChart.setOption({
+            tooltip: { trigger: 'item' },
+            legend: { top: '5%', textStyle: { color: '#a0a0a0' } },
+            series: [{
+                type: 'pie', radius: ['40%', '70%'], center: ['50%', '60%'],
+                data: [
+                    { value: 1048, name: '大类1', itemStyle: { color: '#e3b341' } },
+                    { value: 735, name: '大类2', itemStyle: { color: '#4c8bf5' } },
+                    { value: 580, name: '大类3', itemStyle: { color: '#3ba272' } },
+                    { value: 484, name: '大类4', itemStyle: { color: '#9a60b4' } },
+                    { value: 300, name: '大类5', itemStyle: { color: '#ea7ccc' } }
+                ],
+                label: { show: false }
+            }]
+        });
+
+        const clientChart = echarts.init(document.getElementById('clientChart'));
+        clientChart.setOption({
+            tooltip: { trigger: 'axis' },
+            legend: { bottom: 0, textStyle: { color: '#a0a0a0', fontSize: 10 } },
+            xAxis: { type: 'category', data: ['2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07'], axisLabel: { color: '#a0a0a0' } },
+            yAxis: [{ type: 'value', axisLabel: { color: '#a0a0a0' } }, { type: 'value', axisLabel: { color: '#a0a0a0' }, splitLine: { show: false } }],
+            series: [
+                { name: '毛利额-核心', type: 'bar', data: [30, 45, 35, 50, 60, 40], itemStyle: { color: '#e3b341' } },
+                { name: '毛利额-战略', type: 'bar', data: [20, 30, 25, 40, 50, 30], itemStyle: { color: '#4c8bf5' } },
+                { name: '毛利率-核心', type: 'line', yAxisIndex: 1, data: [28, 30, 29, 31, 32, 30], itemStyle: { color: '#e3b341' } }
+            ]
+        });
+
+        // Purchase Page Charts
+        const purchaseTrendChart = echarts.init(document.getElementById('purchaseTrendChart'));
+        purchaseTrendChart.setOption({
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'axis' },
+            legend: { data: ['采购金额', '采购重量'], textStyle: { color: '#a0a0a0' }, right: 10 },
+            xAxis: { type: 'category', data: ['2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07'], axisLabel: { color: '#a0a0a0' } },
+            yAxis: [
+                { type: 'value', name: '金额(万)', axisLabel: { color: '#a0a0a0' }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } } },
+                { type: 'value', name: '重量(吨)', axisLabel: { color: '#a0a0a0' }, splitLine: { show: false } }
+            ],
+            series: [
+                { name: '采购金额', type: 'bar', barWidth: '35%', data: [1200, 1350, 1280, 1420, 1560, 1380], itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#4c8bf5' }, { offset: 1, color: '#2d5cb8' }]) } },
+                { name: '采购重量', type: 'line', yAxisIndex: 1, data: [8500, 9200, 8800, 9800, 10500, 9200], itemStyle: { color: '#e3b341' }, lineStyle: { width: 3 }, smooth: true }
+            ]
+        });
+
+        const supplierRankChart = echarts.init(document.getElementById('supplierRankChart'));
+        supplierRankChart.setOption({
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'axis' },
+            grid: { left: '3%', right: '15%', top: '10%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'value', axisLabel: { color: '#a0a0a0', formatter: '{value}万' }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } } },
+            yAxis: { type: 'category', data: ['供应商E', '供应商D', '供应商C', '供应商B', '供应商A'], axisLine: { lineStyle: { color: '#3a3f4b' } }, axisLabel: { color: '#a0a0a0' } },
+            series: [{
+                name: '采购金额', type: 'bar', data: [280, 350, 420, 560, 720],
+                itemStyle: { color: (params) => ['#3ba272', '#4c8bf5', '#e3b341', '#9a60b4', '#ea7ccc'][params.dataIndex] },
+                label: { show: true, position: 'right', color: '#a0a0a0', formatter: '{c}万' }
+            }]
+        });
+
+        let salesInited = false;
+        let salesProductTop5Chart;
+        let salesCustomerTop5Chart;
+        let salesRegionAnalysisChart;
+        function initSalesCharts() {
+            salesInited = true;
+
+            salesProductTop5Chart = echarts.init(document.getElementById('salesProductTop5Chart'));
+            salesProductTop5Chart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: '3%', right: '12%', top: '10%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'value', axisLabel: { color: '#a0a0a0', formatter: '{value}万' }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } } },
+                yAxis: { type: 'category', data: ['产品E', '产品D', '产品C', '产品B', '产品A'], axisLine: { lineStyle: { color: '#3a3f4b' } }, axisLabel: { color: '#a0a0a0' } },
+                series: [{
+                    name: '销售金额',
+                    type: 'bar',
+                    data: [180, 230, 310, 420, 560],
+                    itemStyle: { color: (params) => ['#3ba272', '#4c8bf5', '#e3b341', '#9a60b4', '#ea7ccc'][params.dataIndex] },
+                    label: { show: true, position: 'right', color: '#a0a0a0', formatter: '{c}万' }
+                }]
+            });
+
+            salesCustomerTop5Chart = echarts.init(document.getElementById('salesCustomerTop5Chart'));
+            salesCustomerTop5Chart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: '3%', right: '12%', top: '10%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'value', axisLabel: { color: '#a0a0a0', formatter: '{value}万' }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } } },
+                yAxis: { type: 'category', data: ['客户E', '客户D', '客户C', '客户B', '客户A'], axisLine: { lineStyle: { color: '#3a3f4b' } }, axisLabel: { color: '#a0a0a0' } },
+                series: [{
+                    name: '销售金额',
+                    type: 'bar',
+                    data: [220, 280, 340, 460, 620],
+                    itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ offset: 0, color: '#4c8bf5' }, { offset: 1, color: '#e3b341' }]) },
+                    label: { show: true, position: 'right', color: '#a0a0a0', formatter: '{c}万' }
+                }]
+            });
+
+            salesRegionAnalysisChart = echarts.init(document.getElementById('salesRegionAnalysisChart'));
+            salesRegionAnalysisChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'item' },
+                legend: { orient: 'vertical', right: 10, top: 'center', textStyle: { color: '#a0a0a0' } },
+                series: [{
+                    name: '销售区域',
+                    type: 'pie',
+                    radius: ['45%', '70%'],
+                    center: ['35%', '50%'],
+                    label: { show: false },
+                    data: [
+                        { value: 420, name: '华东', itemStyle: { color: '#4c8bf5' } },
+                        { value: 360, name: '华南', itemStyle: { color: '#e3b341' } },
+                        { value: 280, name: '华北', itemStyle: { color: '#3ba272' } },
+                        { value: 220, name: '西南', itemStyle: { color: '#9a60b4' } },
+                        { value: 160, name: '西北', itemStyle: { color: '#ea7ccc' } }
+                    ]
+                }]
+            });
+        }
+
+        let inventoryInited = false;
+        let inventoryInOutChart;
+        let inventoryHistoryChart;
+        let inventoryWarehouseChart;
+        function initInventoryCharts() {
+            inventoryInited = true;
+
+            inventoryInOutChart = echarts.init(document.getElementById('inventoryInOutChart'));
+            inventoryInOutChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                legend: { data: ['入库', '出库'], textStyle: { color: '#a0a0a0' }, right: 10 },
+                grid: { left: '3%', right: '4%', top: '12%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'category', data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'], axisLabel: { color: '#a0a0a0' } },
+                yAxis: { type: 'value', axisLabel: { color: '#a0a0a0' }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } } },
+                series: [
+                    { name: '入库', type: 'bar', barWidth: '35%', data: [120, 160, 140, 180, 210, 170, 150], itemStyle: { color: '#4c8bf5' } },
+                    { name: '出库', type: 'bar', barWidth: '35%', data: [90, 130, 110, 150, 190, 160, 140], itemStyle: { color: '#e3b341' } }
+                ]
+            });
+
+            inventoryHistoryChart = echarts.init(document.getElementById('inventoryHistoryChart'));
+            inventoryHistoryChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis' },
+                grid: { left: '3%', right: '4%', top: '10%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'category', data: ['2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07'], axisLabel: { color: '#a0a0a0' } },
+                yAxis: { type: 'value', axisLabel: { color: '#a0a0a0', formatter: '{value}吨' }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } } },
+                series: [{
+                    name: '历史库存',
+                    type: 'line',
+                    smooth: true,
+                    data: [860, 920, 890, 980, 1040, 1015],
+                    itemStyle: { color: '#3ba272' },
+                    areaStyle: { color: 'rgba(59,162,114,0.18)' },
+                    lineStyle: { width: 3 }
+                }]
+            });
+
+            inventoryWarehouseChart = echarts.init(document.getElementById('inventoryWarehouseChart'));
+            inventoryWarehouseChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'item' },
+                legend: { bottom: 0, textStyle: { color: '#a0a0a0' } },
+                series: [{
+                    name: '仓库分布',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['50%', '45%'],
+                    label: { show: false },
+                    data: [
+                        { value: 320, name: '华东仓', itemStyle: { color: '#4c8bf5' } },
+                        { value: 260, name: '华南仓', itemStyle: { color: '#e3b341' } },
+                        { value: 210, name: '华北仓', itemStyle: { color: '#3ba272' } },
+                        { value: 160, name: '西南仓', itemStyle: { color: '#9a60b4' } },
+                        { value: 90, name: '西北仓', itemStyle: { color: '#ea7ccc' } }
+                    ]
+                }]
+            });
+        }
+
+        // Initial setup - set overview as active on load
+        document.getElementById('nav-overview').classList.add('active');
+        document.getElementById('page-overview').classList.remove('hidden');
+
+        window.addEventListener('resize', () => {
+            trendChart.resize();
+            pieChart.resize();
+            clientChart.resize();
+            purchaseTrendChart.resize();
+            supplierRankChart.resize();
+            if (salesInited) {
+                salesProductTop5Chart.resize();
+                salesCustomerTop5Chart.resize();
+                salesRegionAnalysisChart.resize();
+            }
+            if (inventoryInited) {
+                inventoryInOutChart.resize();
+                inventoryHistoryChart.resize();
+                inventoryWarehouseChart.resize();
+            }
+        });
+    </script>
+</body>
+</html>
