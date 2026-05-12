@@ -49,23 +49,25 @@ const PurchasePage: React.FC = () => {
           <div className="dashboard-card p-4 flex flex-col gap-4 h-[312px]">
             <div className="card-corner-top-right"></div>
             <div className="card-corner-bottom-left"></div>
-            <div className="grid grid-cols-4 gap-3">
-              {purchaseIndicators.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`relative overflow-hidden rounded-lg p-2 bg-gradient-to-br ${item.color} ${item.shadow} shadow-lg flex flex-col items-center justify-center gap-1 group transition-transform hover:scale-[1.02]`}
-                >
-                  <div className="absolute top-0 right-0 p-8 bg-white/10 rounded-full -mr-4 -mt-4 blur-2xl group-hover:blur-xl transition-all"></div>
-                  <div className="text-white drop-shadow-md">
-                    {item.icon}
+            <div className="flex-1 flex items-center justify-center pt-4">
+              <div className="grid grid-cols-4 gap-3 w-full max-w-[720px]">
+                {purchaseIndicators.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className={`relative overflow-hidden rounded-lg p-2 bg-gradient-to-br ${item.color} ${item.shadow} shadow-lg flex flex-col items-center justify-center gap-1 group transition-transform hover:scale-[1.02]`}
+                  >
+                    <div className="absolute top-0 right-0 p-8 bg-white/10 rounded-full -mr-4 -mt-4 blur-2xl group-hover:blur-xl transition-all"></div>
+                    <div className="text-white drop-shadow-md">
+                      {item.icon}
+                    </div>
+                    <span className="text-[10px] text-white/80 font-medium">{item.label}</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-base font-bold text-white drop-shadow-sm">{item.value}</span>
+                      <span className="text-[10px] text-white/70">{item.unit}</span>
+                    </div>
                   </div>
-                  <span className="text-[10px] text-white/80 font-medium">{item.label}</span>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-base font-bold text-white drop-shadow-sm">{item.value}</span>
-                    <span className="text-[10px] text-white/70">{item.unit}</span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
             <div className="flex flex-col gap-1 mt-auto">
               <div className="flex justify-between items-center text-xs">
