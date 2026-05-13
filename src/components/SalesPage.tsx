@@ -1,7 +1,7 @@
 import React from 'react';
-import { DollarSign, Scale, Percent, FileText, Trophy, Users, MapPinned } from 'lucide-react';
+import { DollarSign, Scale, Percent, FileText, Trophy, Users, MapPinned, BarChart3, Package } from 'lucide-react';
 import KPICard from './KPICard';
-import { SalesCustomerTop5Chart, SalesProductTop5Chart, SalesRegionAnalysisChart } from './Charts';
+import { SalesCustomerTop5Chart, SalesHalfYearAnalysisChart, SalesProductTop5Chart, SalesProductTrendChart, SalesRegionAnalysisChart } from './Charts';
 
 const SalesPage: React.FC = () => {
   const productRows = [
@@ -45,6 +45,65 @@ const SalesPage: React.FC = () => {
           icon={<Percent size={16} className="text-[#3ba272]" />}
         />
       </div>
+
+      <section className="flex flex-col gap-2">
+        <div className="flex items-center gap-2 text-sm text-dashboard-muted mb-1">
+          <BarChart3 size={14} className="text-dashboard-accent" />
+          <span>近半年销售分析</span>
+        </div>
+        <div className="dashboard-card p-4">
+          <div className="card-corner-top-right"></div>
+          <div className="card-corner-bottom-left"></div>
+          <SalesHalfYearAnalysisChart />
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <div className="flex items-center justify-between flex-wrap gap-3 text-sm text-dashboard-muted mb-1">
+          <div className="flex items-center gap-2">
+            <Package size={14} className="text-dashboard-accent" />
+            <span>商品销售趋势</span>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-dashboard-muted">平台</span>
+              <select className="h-7 rounded-md bg-[#14161d] border border-dashboard-border px-2 text-dashboard-accent outline-none">
+                <option>全选</option>
+                <option>平台A</option>
+                <option>平台B</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-dashboard-muted">品类</span>
+              <select className="h-7 rounded-md bg-[#14161d] border border-dashboard-border px-2 text-dashboard-accent outline-none">
+                <option>全选</option>
+                <option>品类0</option>
+                <option>品类1</option>
+                <option>品类2</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-dashboard-muted">商品销售额</span>
+              <select className="h-7 rounded-md bg-[#14161d] border border-dashboard-border px-2 text-dashboard-accent outline-none">
+                <option>全选</option>
+                <option>商品A</option>
+                <option>商品B</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-dashboard-muted">日期</span>
+              <input type="date" defaultValue="2024-04-03" className="h-7 rounded-md bg-[#14161d] border border-dashboard-border px-2 text-dashboard-accent outline-none" />
+              <span className="text-dashboard-muted">-</span>
+              <input type="date" defaultValue="2024-05-01" className="h-7 rounded-md bg-[#14161d] border border-dashboard-border px-2 text-dashboard-accent outline-none" />
+            </div>
+          </div>
+        </div>
+        <div className="dashboard-card p-4">
+          <div className="card-corner-top-right"></div>
+          <div className="card-corner-bottom-left"></div>
+          <SalesProductTrendChart />
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <section className="flex flex-col gap-2">

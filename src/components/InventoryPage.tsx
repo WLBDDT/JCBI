@@ -1,7 +1,7 @@
 import React from 'react';
-import { Boxes, Truck, Activity, BarChart3, LineChart, MapPinned } from 'lucide-react';
+import { Boxes, Truck, Activity, BarChart3, LineChart, MapPinned, PieChart } from 'lucide-react';
 import KPICard from './KPICard';
-import { InventoryHistoryChart, InventoryInOutChart, InventoryWarehouseDistributionChart } from './Charts';
+import { InventoryAmountAgingChart, InventoryHistoryChart, InventoryInOutChart, InventoryWarehouseDistributionChart } from './Charts';
 
 const InventoryPage: React.FC = () => {
   return (
@@ -101,6 +101,18 @@ const InventoryPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <div className="flex items-center gap-2 text-sm text-dashboard-muted mb-1">
+          <PieChart size={14} className="text-dashboard-accent" />
+          <span>库存金额占比_库龄</span>
+        </div>
+        <div className="dashboard-card p-4">
+          <div className="card-corner-top-right"></div>
+          <div className="card-corner-bottom-left"></div>
+          <InventoryAmountAgingChart />
         </div>
       </section>
     </div>
