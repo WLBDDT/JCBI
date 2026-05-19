@@ -2,7 +2,11 @@ import React from 'react';
 import ReactECharts from 'echarts-for-react';
 import * as echarts from 'echarts';
 
-export const MonthlyTrendChart: React.FC = () => {
+interface BaseChartProps {
+  height?: number | string;
+}
+
+export const MonthlyTrendChart: React.FC<BaseChartProps> = ({ height = '240px' }) => {
   const option = {
     backgroundColor: 'transparent',
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
@@ -25,10 +29,10 @@ export const MonthlyTrendChart: React.FC = () => {
       { name: '毛利率', type: 'line', yAxisIndex: 1, data: [25, 27, 26, 28, 28.15, 26], itemStyle: { color: '#4c8bf5' }, lineStyle: { width: 3 } }
     ]
   };
-  return <ReactECharts option={option} style={{ height: '240px' }} />;
+  return <ReactECharts option={option} style={{ height }} />;
 };
 
-export const CategoryContributionChart: React.FC = () => {
+export const CategoryContributionChart: React.FC<BaseChartProps> = ({ height = '240px' }) => {
   const option = {
     backgroundColor: 'transparent',
     tooltip: { trigger: 'item' },
@@ -48,10 +52,10 @@ export const CategoryContributionChart: React.FC = () => {
       }
     ]
   };
-  return <ReactECharts option={option} style={{ height: '240px' }} />;
+  return <ReactECharts option={option} style={{ height }} />;
 };
 
-export const ClientTypeChart: React.FC = () => {
+export const ClientTypeChart: React.FC<BaseChartProps> = ({ height = '240px' }) => {
   const option = {
     backgroundColor: 'transparent',
     tooltip: { trigger: 'axis' },
@@ -71,7 +75,7 @@ export const ClientTypeChart: React.FC = () => {
       { name: '毛利率-中小', type: 'line', yAxisIndex: 1, data: [18, 20, 19, 21, 22, 20], itemStyle: { color: '#3ba272' } }
     ]
   };
-  return <ReactECharts option={option} style={{ height: '240px' }} />;
+  return <ReactECharts option={option} style={{ height }} />;
 };
 
 export const PurchaseTrendChart: React.FC = () => {

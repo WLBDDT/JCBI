@@ -18,28 +18,34 @@ const productData: ProductData[] = [
   { name: '产品11', gpRateChange: '-1.46%', gpAmountChangeRate: '-20.03%', gpContribution: '5.48%', isUp: false },
 ];
 
-const ProductTable: React.FC = () => {
+interface ProductTableProps {
+  size?: 'default' | 'compact';
+}
+
+const ProductTable: React.FC<ProductTableProps> = ({ size = 'default' }) => {
+  const isCompact = size === 'compact';
+  const cellPadding = isCompact ? 'p-2' : 'p-3';
   return (
     <div className="dashboard-card overflow-hidden">
       <div className="card-corner-top-right"></div>
       <div className="card-corner-bottom-left"></div>
       
-      <table className="w-full text-left text-sm border-collapse">
+      <table className={`w-full text-left border-collapse ${isCompact ? 'text-xs' : 'text-sm'}`}>
         <thead className="bg-[#2d313d] text-dashboard-accent">
           <tr>
-            <th className="p-3 border-b border-dashboard-border">产品名称</th>
-            <th className="p-3 border-b border-dashboard-border">毛利率变动额</th>
-            <th className="p-3 border-b border-dashboard-border">毛利额变动率</th>
-            <th className="p-3 border-b border-dashboard-border">毛利额贡献度</th>
+            <th className={`${cellPadding} border-b border-dashboard-border`}>产品名称</th>
+            <th className={`${cellPadding} border-b border-dashboard-border`}>毛利率变动额</th>
+            <th className={`${cellPadding} border-b border-dashboard-border`}>毛利额变动率</th>
+            <th className={`${cellPadding} border-b border-dashboard-border`}>毛利额贡献度</th>
           </tr>
         </thead>
         <tbody>
           {productData.map((item, index) => (
             <tr key={index} className="hover:bg-white/5 transition-colors">
-              <td className="p-3 border-b border-dashboard-border text-dashboard-muted">{item.name}</td>
-              <td className="p-3 border-b border-dashboard-border">{item.gpRateChange}</td>
-              <td className="p-3 border-b border-dashboard-border">{item.gpAmountChangeRate}</td>
-              <td className="p-3 border-b border-dashboard-border">
+              <td className={`${cellPadding} border-b border-dashboard-border text-dashboard-muted`}>{item.name}</td>
+              <td className={`${cellPadding} border-b border-dashboard-border`}>{item.gpRateChange}</td>
+              <td className={`${cellPadding} border-b border-dashboard-border`}>{item.gpAmountChangeRate}</td>
+              <td className={`${cellPadding} border-b border-dashboard-border`}>
                 <div className="flex items-center gap-2 justify-between">
                   <span>{item.gpContribution}</span>
                   {item.isUp ? (

@@ -142,3 +142,8 @@ body {
   filter: blur(8px);
   opacity: 0.9;
 }
+
+.overview-page .purchase-details,
+.page-overview .purchase-details {
+  display: none !important;
+}
