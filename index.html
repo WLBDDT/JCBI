@@ -1588,7 +1588,7 @@
                     }
                 },
                 legend: {
-                    data: ['销售收入', '销售成本', '毛利率', '毛利率-同期'],
+                    data: ['销售收入', '销售成本', '毛利率'],
                     textStyle: { color: '#a0a0a0' },
                     right: 10,
                     top: 10
@@ -1628,8 +1628,8 @@
                     {
                         name: '销售收入',
                         type: 'bar',
-                        stack: 'total',
-                        barWidth: '50%',
+                        barWidth: 18,
+                        z: 1,
                         itemStyle: {
                             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                                 { offset: 0, color: '#7eb8e8' },
@@ -1641,10 +1641,14 @@
                     {
                         name: '销售成本',
                         type: 'bar',
-                        stack: 'total',
-                        barWidth: '50%',
+                        barWidth: 18,
+                        barGap: '-100%',
+                        z: 2,
                         itemStyle: {
-                            color: '#2d313d'
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#2d5cb8' },
+                                { offset: 1, color: '#1f3e7d' }
+                            ])
                         },
                         data: salesCost
                     },
@@ -1655,17 +1659,6 @@
                         data: grossMargin,
                         itemStyle: { color: '#4c8bf5' },
                         lineStyle: { width: 2 },
-                        smooth: true,
-                        symbol: 'circle',
-                        symbolSize: 6
-                    },
-                    {
-                        name: '毛利率-同期',
-                        type: 'line',
-                        yAxisIndex: 1,
-                        data: grossMarginYoY,
-                        itemStyle: { color: '#e3b341' },
-                        lineStyle: { width: 2, type: 'dashed' },
                         smooth: true,
                         symbol: 'circle',
                         symbolSize: 6
