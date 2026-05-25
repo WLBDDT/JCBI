@@ -244,7 +244,7 @@
                 <div class="p-2 dashboard-card rounded-lg">
                     <i class="lucide-settings text-accent"></i>
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight">驾驶舱</h1>
+                <h1 class="text-2xl font-bold tracking-tight">企业综合驾驶舱</h1>
             </div>
 
             
@@ -438,7 +438,7 @@
     <!-- Margin Page -->
     <div id="page-margin" class="hidden">
         <div class="flex items-center justify-between flex-wrap gap-1.5 mb-1.5">
-            <h2 class="text-base font-bold text-white">毛利分析</h2>
+            <h2 class="text-base font-bold text-white">毛利统计</h2>
             <div class="flex items-center gap-2">
                 <div class="flex items-center gap-1.5 text-xs">
                     <span class="text-muted">查询时间</span>
@@ -567,7 +567,7 @@
     <div id="page-purchase" class="hidden">
         <div class="flex flex-col gap-2">
             <div class="flex items-center justify-between flex-wrap gap-1.5">
-                <h2 class="text-base font-bold text-white">采购概览</h2>
+                <h2 class="text-base font-bold text-white">采购统计</h2>
                 <div class="flex items-center gap-2">
                     <div class="flex items-center gap-1.5 text-xs">
                         <span class="text-muted">查询时间</span>
@@ -589,17 +589,6 @@
         </div>
         <!-- KPI Row -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-1.5 mb-1.5">
-            <div class="dashboard-card p-3 flex flex-col gap-2">
-                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
-                <div class="flex items-center gap-2 text-xs text-muted">
-                    <i class="lucide-file-text text-green-400 text-xs"></i>
-                    <span>采购合同数</span>
-                </div>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-lg font-bold text-green-400">156</span>
-                    <span class="text-xs text-muted">份</span>
-                </div>
-            </div>
             <div class="dashboard-card p-3 flex flex-col gap-2">
                 <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
                 <div class="flex items-center gap-2 text-xs text-muted">
@@ -625,6 +614,17 @@
             <div class="dashboard-card p-3 flex flex-col gap-2">
                 <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
                 <div class="flex items-center gap-2 text-xs text-muted">
+                    <i class="lucide-clock text-red-400 text-xs"></i>
+                    <span>未付金额</span>
+                </div>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-lg font-bold text-red-400">1,860</span>
+                    <span class="text-xs text-muted">万</span>
+                </div>
+            </div>
+            <div class="dashboard-card p-3 flex flex-col gap-2">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-xs text-muted">
                     <i class="lucide-file-text text-purple-400 text-xs"></i>
                     <span>税费</span>
                 </div>
@@ -636,12 +636,12 @@
             <div class="dashboard-card p-3 flex flex-col gap-2">
                 <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
                 <div class="flex items-center gap-2 text-xs text-muted">
-                    <i class="lucide-clock text-red-400 text-xs"></i>
-                    <span>未付金额</span>
+                    <i class="lucide-file-text text-green-400 text-xs"></i>
+                    <span>采购合同数</span>
                 </div>
                 <div class="flex items-baseline gap-1">
-                    <span class="text-lg font-bold text-red-400">1,860</span>
-                    <span class="text-xs text-muted">万</span>
+                    <span class="text-lg font-bold text-green-400">156</span>
+                    <span class="text-xs text-muted">份</span>
                 </div>
             </div>
         </div>
@@ -662,12 +662,12 @@
                     </div>
                 </div>
 
-                <!-- Purchase Price Trend -->
+                <!-- Purchase List -->
                 <div class="flex flex-col gap-1.5">
                     <div class="flex items-center justify-between flex-wrap gap-1.5 text-xs text-muted">
                         <div class="flex items-center gap-2">
-                            <i class="lucide-trending-up text-accent text-xs"></i>
-                            <span>商品采购单价趋势</span>
+                            <i class="lucide-list text-accent text-xs"></i>
+                            <span>商品采购趋势</span>
                         </div>
                         <div class="flex items-center gap-1.5 flex-wrap" id="priceTrendQueryContainer">
                             <div class="flex items-center gap-1 text-xs">
@@ -726,9 +726,125 @@
                             </div>
                         </div>
                     </div>
-                    <div class="dashboard-card p-2">
+                    <div class="dashboard-card p-2 flex flex-col" style="height: 180px;">
                         <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
-                        <div id="purchasePriceTrendChart" style="height:180px"></div>
+                        <div class="flex justify-center items-center gap-6 mb-1 pb-1 border-b border-[#2a2f3a]">
+                            <div class="flex items-center gap-2">
+                                <span class="text-muted text-xs">总重量</span>
+                                <span class="text-blue-400 text-sm font-bold">4,410 吨</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-muted text-xs">总金额</span>
+                                <span class="text-accent text-sm font-bold">2,600 万</span>
+                            </div>
+                        </div>
+                        <div class="overflow-auto flex-1" id="purchaseProductScrollContainer" onmouseenter="stopPurchaseProductScroll()" onmouseleave="startPurchaseProductScroll()">
+                            <table class="w-full text-[10px]">
+                                <thead class="bg-[#2d313d] text-accent sticky top-0">
+                                    <tr>
+                                        <th class="p-1.5 border-b border-[#3a3f4b] text-left">海外供应商</th>
+                                        <th class="p-1.5 border-b border-[#3a3f4b] text-left">品类</th>
+                                        <th class="p-1.5 border-b border-[#3a3f4b] text-left">国家</th>
+                                        <th class="p-1.5 border-b border-[#3a3f4b] text-left">厂号</th>
+                                        <th class="p-1.5 border-b border-[#3a3f4b] text-left">件套</th>
+                                        <th class="p-1.5 border-b border-[#3a3f4b] text-right">重量(吨)</th>
+                                        <th class="p-1.5 border-b border-[#3a3f4b] text-right">金额(万)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted">供应商A</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">品类0</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]"><span class="px-1 py-0.5 rounded text-[9px] bg-blue-500/20 text-blue-400">澳大利亚</span></td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted font-mono">AUS-2024-001</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">牛八件套</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right">1,200</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right text-accent font-bold">720</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted">供应商B</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">品类1</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]"><span class="px-1 py-0.5 rounded text-[9px] bg-green-500/20 text-green-400">巴西</span></td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted font-mono">BRA-2024-001</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">牛后六件套</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right">960</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right text-accent font-bold">560</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted">供应商C</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">品类2</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]"><span class="px-1 py-0.5 rounded text-[9px] bg-purple-500/20 text-purple-400">阿根廷</span></td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted font-mono">ARG-2024-001</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">龟腱/后腱</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right">880</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right text-accent font-bold">520</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted">供应商D</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">品类0</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]"><span class="px-1 py-0.5 rounded text-[9px] bg-orange-500/20 text-orange-400">乌拉圭</span></td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted font-mono">URU-2024-001</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">单品</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right">720</td>
+                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right text-accent font-bold">420</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="py-1.5 px-1.5 text-muted">供应商E</td>
+                                        <td class="py-1.5 px-1.5">品类1</td>
+                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-cyan-500/20 text-cyan-400">新西兰</span></td>
+                                        <td class="py-1.5 px-1.5 text-muted font-mono">NZL-2024-001</td>
+                                        <td class="py-1.5 px-1.5">牛七件套</td>
+                                        <td class="py-1.5 px-1.5 text-right">650</td>
+                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">380</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="py-1.5 px-1.5 text-muted">供应商F</td>
+                                        <td class="py-1.5 px-1.5">品类2</td>
+                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-blue-500/20 text-blue-400">澳大利亚</span></td>
+                                        <td class="py-1.5 px-1.5 text-muted font-mono">AUS-2024-002</td>
+                                        <td class="py-1.5 px-1.5">牛五件套</td>
+                                        <td class="py-1.5 px-1.5 text-right">580</td>
+                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">340</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="py-1.5 px-1.5 text-muted">供应商G</td>
+                                        <td class="py-1.5 px-1.5">品类0</td>
+                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-green-500/20 text-green-400">巴西</span></td>
+                                        <td class="py-1.5 px-1.5 text-muted font-mono">BRA-2024-002</td>
+                                        <td class="py-1.5 px-1.5">牛腩三件套</td>
+                                        <td class="py-1.5 px-1.5 text-right">520</td>
+                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">260</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="py-1.5 px-1.5 text-muted">供应商H</td>
+                                        <td class="py-1.5 px-1.5">品类1</td>
+                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-purple-500/20 text-purple-400">阿根廷</span></td>
+                                        <td class="py-1.5 px-1.5 text-muted font-mono">ARG-2024-002</td>
+                                        <td class="py-1.5 px-1.5">后四件套</td>
+                                        <td class="py-1.5 px-1.5 text-right">460</td>
+                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">270</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="py-1.5 px-1.5 text-muted">供应商I</td>
+                                        <td class="py-1.5 px-1.5">品类2</td>
+                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-orange-500/20 text-orange-400">乌拉圭</span></td>
+                                        <td class="py-1.5 px-1.5 text-muted font-mono">URU-2024-002</td>
+                                        <td class="py-1.5 px-1.5">单品</td>
+                                        <td class="py-1.5 px-1.5 text-right">380</td>
+                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">210</td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5">
+                                        <td class="py-1.5 px-1.5 text-muted">供应商J</td>
+                                        <td class="py-1.5 px-1.5">品类0</td>
+                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-cyan-500/20 text-cyan-400">新西兰</span></td>
+                                        <td class="py-1.5 px-1.5 text-muted font-mono">NZL-2024-002</td>
+                                        <td class="py-1.5 px-1.5">牛八件套</td>
+                                        <td class="py-1.5 px-1.5 text-right">520</td>
+                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">310</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -884,17 +1000,6 @@
             <div class="dashboard-card p-2 flex flex-col gap-1">
                 <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
                 <div class="flex items-center gap-2 text-xs text-muted">
-                    <i class="lucide-file-text text-green-400 text-xs"></i>
-                    <span>销售合同数</span>
-                </div>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-lg font-bold text-green-400">86</span>
-                    <span class="text-xs text-muted">份</span>
-                </div>
-            </div>
-            <div class="dashboard-card p-2 flex flex-col gap-1">
-                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
-                <div class="flex items-center gap-2 text-xs text-muted">
                     <i class="lucide-scale text-accent text-xs"></i>
                     <span>销售重量</span>
                 </div>
@@ -917,22 +1022,22 @@
             <div class="dashboard-card p-2 flex flex-col gap-1">
                 <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
                 <div class="flex items-center gap-2 text-xs text-muted">
-                    <i class="lucide-file-text text-orange-400 text-xs"></i>
-                    <span>税费</span>
+                    <i class="lucide-credit-card text-cyan-400 text-xs"></i>
+                    <span>未收金额</span>
                 </div>
                 <div class="flex items-baseline gap-1">
-                    <span class="text-lg font-bold text-orange-400">370</span>
+                    <span class="text-lg font-bold text-cyan-400">320</span>
                     <span class="text-xs text-muted">万</span>
                 </div>
             </div>
             <div class="dashboard-card p-2 flex flex-col gap-1">
                 <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
                 <div class="flex items-center gap-2 text-xs text-muted">
-                    <i class="lucide-credit-card text-cyan-400 text-xs"></i>
-                    <span>未收金额</span>
+                    <i class="lucide-file-text text-orange-400 text-xs"></i>
+                    <span>税费</span>
                 </div>
                 <div class="flex items-baseline gap-1">
-                    <span class="text-lg font-bold text-cyan-400">320</span>
+                    <span class="text-lg font-bold text-orange-400">370</span>
                     <span class="text-xs text-muted">万</span>
                 </div>
             </div>
@@ -945,6 +1050,17 @@
                 <div class="flex items-baseline gap-1">
                     <span class="text-lg font-bold text-purple-400">25.36</span>
                     <span class="text-xs text-muted">%</span>
+                </div>
+            </div>
+            <div class="dashboard-card p-2 flex flex-col gap-1">
+                <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
+                <div class="flex items-center gap-2 text-xs text-muted">
+                    <i class="lucide-file-text text-green-400 text-xs"></i>
+                    <span>销售合同数</span>
+                </div>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-lg font-bold text-green-400">86</span>
+                    <span class="text-xs text-muted">份</span>
                 </div>
             </div>
         </div>
@@ -1030,9 +1146,125 @@
                         </div>
                     </div>
                 </div>
-                <div class="dashboard-card p-2">
+                <div class="dashboard-card p-2 flex flex-col" style="height: 180px;">
                     <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
-                    <div id="salesProductTrendChart" style="height:180px"></div>
+                    <div class="flex justify-center items-center gap-6 mb-1 pb-1 border-b border-[#2a2f3a]">
+                        <div class="flex items-center gap-2">
+                            <span class="text-muted text-xs">总重量</span>
+                            <span class="text-blue-400 text-sm font-bold">3,850 吨</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-muted text-xs">总金额</span>
+                            <span class="text-accent text-sm font-bold">2,280 万</span>
+                        </div>
+                    </div>
+                    <div class="overflow-auto flex-1" id="salesProductScrollContainer" onmouseenter="stopSalesProductScroll()" onmouseleave="startSalesProductScroll()">
+                        <table class="w-full text-[10px]">
+                            <thead class="bg-[#2d313d] text-accent sticky top-0">
+                                <tr>
+                                    <th class="p-2 border-b border-[#3a3f4b] text-left">海外供应商</th>
+                                    <th class="p-2 border-b border-[#3a3f4b] text-left">品类</th>
+                                    <th class="p-2 border-b border-[#3a3f4b] text-left">国家</th>
+                                    <th class="p-2 border-b border-[#3a3f4b] text-left">厂号</th>
+                                    <th class="p-2 border-b border-[#3a3f4b] text-left">件套</th>
+                                    <th class="p-2 border-b border-[#3a3f4b] text-right">重量(吨)</th>
+                                    <th class="p-2 border-b border-[#3a3f4b] text-right">金额(万)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-white/5">
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商A</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腱</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">澳大利亚</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">AUS-2024-001</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛八件套</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">850</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">510</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商B</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腩</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">巴西</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">BRA-2024-001</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腩三件套</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">920</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">460</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商C</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛霖</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">阿根廷</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">ARG-2024-001</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">单品</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">780</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">429</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商D</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腱</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">乌拉圭</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">URU-2024-001</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">龟腱/后腱</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">650</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">390</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商E</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腱</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">新西兰</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">NZL-2024-001</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛五件套</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">650</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">491</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商F</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛霖</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">澳大利亚</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">AUS-2024-002</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛七件套</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">520</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">312</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商G</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腩</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">阿根廷</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">ARG-2024-002</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">后四件套</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">480</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">240</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商H</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腱</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">巴西</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">BRA-2024-002</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛后六件套</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">720</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">432</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商I</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛霖</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">乌拉圭</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">URU-2024-002</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">单品</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">380</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">209</td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商J</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腩</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">新西兰</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">NZL-2024-002</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腩三件套</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">560</td>
+                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">280</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1345,14 +1577,12 @@
 
             if (currentPageId === 'purchase') {
                 if (purchaseTrendChart) purchaseTrendChart.resize();
-                if (purchasePriceTrendChart) purchasePriceTrendChart.resize();
             }
             if (currentPageId === 'margin') {
                 if (marginMonthlyOverviewChart) marginMonthlyOverviewChart.resize();
             }
             if (currentPageId === 'sales' && salesInited) {
                 if (salesHalfYearChart) salesHalfYearChart.resize();
-                if (salesProductTrendChart) salesProductTrendChart.resize();
             }
         }
 
@@ -1377,31 +1607,42 @@
                     fitActivePage();
                     if (!marginInited) {
                         initMarginCharts();
+                    } else {
+                        if (marginMonthlyOverviewChart) marginMonthlyOverviewChart.resize();
                     }
-                    if (marginMonthlyOverviewChart) marginMonthlyOverviewChart.resize();
-                }, 100);
+                }, 150);
             } else if (pageId === 'purchase') {
                 setTimeout(() => {
                     fitActivePage();
-                    if (purchaseTrendChart) purchaseTrendChart.resize();
-                    if (purchasePriceTrendChart) purchasePriceTrendChart.resize();
-                }, 100);
+                    if (!purchaseInited) {
+                        initPurchaseCharts();
+                    } else {
+                        if (purchaseTrendChart) purchaseTrendChart.resize();
+                    }
+                    setTimeout(startPurchaseProductScroll, 500);
+                }, 150);
             } else if (pageId === 'sales') {
                 setTimeout(() => {
-                    if (!salesInited) initSalesCharts();
                     fitActivePage();
-                    if (salesHalfYearChart) salesHalfYearChart.resize();
-                    if (salesProductTrendChart) salesProductTrendChart.resize();
-                }, 100);
+                    if (!salesInited) {
+                        initSalesCharts();
+                    } else {
+                        if (salesHalfYearChart) salesHalfYearChart.resize();
+                    }
+                    setTimeout(startSalesProductScroll, 500);
+                }, 150);
             } else if (pageId === 'inventory') {
                 setTimeout(() => {
-                    if (!inventoryInited) initInventoryCharts();
                     fitActivePage();
-                    if (inventoryInOutChart) inventoryInOutChart.resize();
-                    if (inventoryHistoryChart) inventoryHistoryChart.resize();
-                    if (inventoryWarehouseChart) inventoryWarehouseChart.resize();
-                    if (typeof inventoryAmountAgingChart !== 'undefined' && inventoryAmountAgingChart) inventoryAmountAgingChart.resize();
-                }, 100);
+                    if (!inventoryInited) {
+                        initInventoryCharts();
+                    } else {
+                        if (inventoryInOutChart) inventoryInOutChart.resize();
+                        if (inventoryHistoryChart) inventoryHistoryChart.resize();
+                        if (inventoryWarehouseChart) inventoryWarehouseChart.resize();
+                        if (typeof inventoryAmountAgingChart !== 'undefined' && inventoryAmountAgingChart) inventoryAmountAgingChart.resize();
+                    }
+                }, 150);
             }
         }
         
@@ -1442,107 +1683,31 @@
         // Overview Charts - Removed as overview page no longer has charts
 
 
-        // Purchase Page Charts
-        const purchaseTrendChart = echarts.init(document.getElementById('purchaseTrendChart'));
-        purchaseTrendChart.setOption({
-            backgroundColor: 'transparent',
-            tooltip: { trigger: 'axis' },
-            legend: { data: ['采购金额', '采购重量'], textStyle: { color: '#a0a0a0' }, right: 10 },
-            xAxis: { type: 'category', data: ['2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07'], axisLabel: { color: '#a0a0a0' } },
-            grid: { left: '5%', right: '15%', top: '18%', bottom: '18%', containLabel: true },
-            yAxis: [
-                { type: 'value', name: '金额(万)', position: 'left', axisLabel: { color: '#a0a0a0', fontSize: 10 }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } }, axisLine: { show: true, lineStyle: { color: '#4c8bf5' } }, nameTextStyle: { color: '#4c8bf5', fontSize: 10 }, nameGap: 20 },
-                { type: 'value', name: '重量(吨)', position: 'right', axisLabel: { color: '#e3b341', fontSize: 10 }, splitLine: { show: false }, axisLine: { show: true, lineStyle: { color: '#e3b341' } }, nameTextStyle: { color: '#e3b341', fontSize: 10 }, nameGap: 20 }
-            ],
-            series: [
-                { name: '采购金额', type: 'bar', barWidth: '35%', data: [1200, 1350, 1280, 1420, 1560, 1380], itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#4c8bf5' }, { offset: 1, color: '#2d5cb8' }]) } },
-                { name: '采购重量', type: 'line', yAxisIndex: 1, data: [8500, 9200, 8800, 9800, 10500, 9200], itemStyle: { color: '#e3b341' }, lineStyle: { width: 3 }, smooth: true }
-            ]
-        });
+        // Purchase Page Charts - Initialized on page switch
+        let purchaseInited = false;
+        let purchaseTrendChart;
+        function initPurchaseCharts() {
+            purchaseInited = true;
 
-        const purchasePriceTrendChart = echarts.init(document.getElementById('purchasePriceTrendChart'));
-        purchasePriceTrendChart.setOption({
-            backgroundColor: 'transparent',
-            tooltip: { trigger: 'axis', formatter: function(params) {
-                let result = params[0].axisValue + '<br/>';
-                params.forEach(param => {
-                    result += `${param.marker}${param.seriesName}: ${param.value}元/公斤<br/>`;
-                });
-                return result;
-            }},
-            legend: { show: false },
-            grid: { left: '2%', right: '2%', top: '5%', bottom: '8%', containLabel: true },
-            xAxis: { type: 'category', data: ['2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07'], axisLine: { lineStyle: { color: '#3a3f4b' } }, axisLabel: { color: '#a0a0a0', interval: 0 } },
-            yAxis: { type: 'value', axisLine: { show: false }, axisLabel: { color: '#a0a0a0', formatter: '{value}元/公斤' }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } }, max: 120 },
-            series: [
-                { name: '澳洲牛腱', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6, data: [85, 88, 86, 92, 90, 88], lineStyle: { width: 3, color: '#4c8bf5' }, itemStyle: { color: '#4c8bf5' } },
-                { name: '巴西牛腩', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6, data: [62, 65, 63, 68, 66, 64], lineStyle: { width: 3, color: '#e3b341' }, itemStyle: { color: '#e3b341' } },
-                { name: '阿根廷牛霖', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6, data: [58, 60, 59, 62, 61, 59], lineStyle: { width: 3, color: '#3ba272' }, itemStyle: { color: '#3ba272' } }
-            ]
-        });
-
-        function updatePriceTrendChart() {
-            const category = document.getElementById('priceTrendCategory').value;
-            const country = document.getElementById('priceTrendCountry').value;
-            const factory = document.getElementById('priceTrendFactory').value;
-            const set = document.getElementById('priceTrendSet').value;
-            const timeRange = document.getElementById('priceTrendTimeRange').value;
-            
-            const now = new Date();
-            let xAxisData = [];
-            
-            switch(timeRange) {
-                case 'today':
-                    xAxisData = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
-                    break;
-                case 'week':
-                    xAxisData = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-                    break;
-                case 'month':
-                    const days = Math.min(now.getDate(), 30);
-                    xAxisData = Array.from({length: Math.min(6, days)}, (_, i) => `${i + 1}日`);
-                    break;
-                case 'year':
-                    xAxisData = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-                    break;
-                default:
-                    xAxisData = ['2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07'];
-            }
-            
-            const baseData = {
-                '澳洲牛腱': [85, 88, 86, 92, 90, 88, 91, 89, 93, 90, 87, 88],
-                '巴西牛腩': [62, 65, 63, 68, 66, 64, 67, 65, 69, 66, 63, 65],
-                '阿根廷牛霖': [58, 60, 59, 62, 61, 59, 60, 58, 63, 61, 58, 60]
-            };
-            
-            const filteredData = Object.keys(baseData).map(name => ({
-                name,
-                data: baseData[name].slice(0, xAxisData.length).map(v => {
-                    const factor = Math.random() * 0.15 + 0.92;
-                    return Math.round(v * factor);
-                })
-            }));
-            
-            purchasePriceTrendChart.setOption({
-                xAxis: { data: xAxisData },
-                series: filteredData.map((s, idx) => ({
-                    name: s.name,
-                    type: 'line',
-                    smooth: true,
-                    symbol: 'circle',
-                    symbolSize: 6,
-                    data: s.data,
-                    lineStyle: { width: 3, color: ['#4c8bf5', '#e3b341', '#3ba272'][idx] },
-                    itemStyle: { color: ['#4c8bf5', '#e3b341', '#3ba272'][idx] }
-                }))
+            purchaseTrendChart = echarts.init(document.getElementById('purchaseTrendChart'));
+            purchaseTrendChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['采购金额', '采购重量'], textStyle: { color: '#a0a0a0' }, right: 10 },
+                xAxis: { type: 'category', data: ['2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07'], axisLabel: { color: '#a0a0a0' } },
+                grid: { left: '5%', right: '15%', top: '18%', bottom: '18%', containLabel: true },
+                yAxis: [
+                    { type: 'value', name: '金额(万)', position: 'left', axisLabel: { color: '#a0a0a0', fontSize: 10 }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } }, axisLine: { show: true, lineStyle: { color: '#4c8bf5' } }, nameTextStyle: { color: '#4c8bf5', fontSize: 10 }, nameGap: 20 },
+                    { type: 'value', name: '重量(吨)', position: 'right', axisLabel: { color: '#e3b341', fontSize: 10 }, splitLine: { show: false }, axisLine: { show: true, lineStyle: { color: '#e3b341' } }, nameTextStyle: { color: '#e3b341', fontSize: 10 }, nameGap: 20 }
+                ],
+                series: [
+                    { name: '采购金额', type: 'bar', barWidth: '35%', data: [1200, 1350, 1280, 1420, 1560, 1380], itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#4c8bf5' }, { offset: 1, color: '#2d5cb8' }]) } },
+                    { name: '采购重量', type: 'line', yAxisIndex: 1, data: [8500, 9200, 8800, 9800, 10500, 9200], itemStyle: { color: '#e3b341' }, lineStyle: { width: 3 }, smooth: true }
+                ]
             });
         }
 
-        document.getElementById('priceTrendCategory').addEventListener('change', updatePriceTrendChart);
-        document.getElementById('priceTrendCountry').addEventListener('change', updatePriceTrendChart);
-        document.getElementById('priceTrendFactory').addEventListener('change', updatePriceTrendChart);
-        document.getElementById('priceTrendSet').addEventListener('change', updatePriceTrendChart);
-        document.getElementById('priceTrendTimeRange').addEventListener('change', updatePriceTrendChart);
+
 
         const priceTrendTimeRange = document.getElementById('priceTrendTimeRange');
         const priceTrendCustomDateInputs = document.getElementById('priceTrendCustomDateInputs');
@@ -1626,38 +1791,29 @@
                 ],
                 series: [
                     {
-                        name: '销售收入',
-                        type: 'bar',
-                        barWidth: 18,
-                        z: 1,
-                        itemStyle: {
-                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                { offset: 0, color: '#7eb8e8' },
-                                { offset: 1, color: '#5a9cd9' }
-                            ])
-                        },
-                        data: salesIncome
-                    },
-                    {
                         name: '销售成本',
                         type: 'bar',
                         barWidth: 18,
-                        barGap: '-100%',
-                        z: 2,
                         itemStyle: {
-                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                { offset: 0, color: '#2d5cb8' },
-                                { offset: 1, color: '#1f3e7d' }
-                            ])
+                            color: '#2d5cb8'
                         },
                         data: salesCost
+                    },
+                    {
+                        name: '销售收入',
+                        type: 'bar',
+                        barWidth: 18,
+                        itemStyle: {
+                            color: '#4c8bf5'
+                        },
+                        data: salesIncome
                     },
                     {
                         name: '毛利率',
                         type: 'line',
                         yAxisIndex: 1,
                         data: grossMargin,
-                        itemStyle: { color: '#4c8bf5' },
+                        itemStyle: { color: '#e3b341' },
                         lineStyle: { width: 2 },
                         smooth: true,
                         symbol: 'circle',
@@ -1696,98 +1852,6 @@
                 ]
             });
 
-            const trendDates = ['2024-04-03', '2024-04-05', '2024-04-07', '2024-04-09', '2024-04-11', '2024-04-13', '2024-04-15', '2024-04-17', '2024-04-19', '2024-04-21', '2024-04-23', '2024-04-25', '2024-04-27', '2024-04-29', '2024-05-01'];
-            const trendSeries = [
-                { name: '品类0', color: '#2b5cff', data: [21, 19, 18, 16, 9, 12, 14, 18, 24, 21, 22, 23, 21, 22, 19] },
-                { name: '品类1', color: '#3f5fbf', data: [10, 9, 8, 7, 4, 6, 9, 14, 22, 20, 18, 16, 14, 17, 13] },
-                { name: '品类2', color: '#8b7cf6', data: [14, 11, 11, 10, 9, 15, 21, 32, 43, 34, 31, 22, 25, 14, 18] },
-                { name: '品类3', color: '#66c6ff', data: [4, 4, 3, 3, 2, 3, 4, 4, 5, 4, 4, 3, 3, 1, 2] },
-                { name: '品类4', color: '#56d0c0', data: [2, 2, 2, 2, 1, 2, 2, 3, 3, 2, 2, 2, 2, 1, 1] },
-                { name: '品类5', color: '#ff8b52', data: [3, 2, 2, 1, 1, 2, 3, 5, 12, 8, 10, 5, 9, 1, 5] },
-                { name: '品类6', color: '#4c8bf5', data: [1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 2, 2, 1, 1, 1] },
-                { name: '品类7', color: '#a0a0a0', data: [0.6, 0.5, 0.5, 0.4, 0.3, 0.4, 0.6, 0.8, 1.0, 0.9, 0.8, 0.7, 0.6, 0.4, 0.5] }
-            ];
-            salesProductTrendChart = echarts.init(document.getElementById('salesProductTrendChart'));
-            salesProductTrendChart.setOption({
-                backgroundColor: 'transparent',
-                tooltip: { 
-                    trigger: 'axis',
-                    maxHeight: 200,
-                    overflow: 'scroll',
-                    formatter: function(params) {
-                        const countryMap = ['澳大利亚', '巴西', '阿根廷', '乌拉圭', '新西兰', '澳大利亚', '巴西', '阿根廷'];
-                        const factoryMap = ['AUS-2024-001', 'BRA-2024-001', 'ARG-2024-001', 'URU-2024-001', 'AUS-2024-002', 'BRA-2024-002', 'ARG-2024-002', 'URU-2024-002'];
-                        const setMap = ['牛八件套', '牛后六件套', '龟腱/后腱', '后四件套', '牛七件套', '牛五件套', '牛腩三件套', '单品'];
-                        let result = params[0].axisValue + '<br/>';
-                        params.forEach((param, idx) => {
-                            const country = countryMap[idx % countryMap.length];
-                            const factory = factoryMap[idx % factoryMap.length];
-                            const set = setMap[idx % setMap.length];
-                            result += `${param.marker}国家: ${country}<br/>`;
-                            result += `  厂号: ${factory}<br/>`;
-                            result += `  件套: ${set}<br/>`;
-                            result += `  销售额: ${param.value}万<br/>`;
-                        });
-                        return result;
-                    }
-                },
-                legend: { show: false },
-                grid: { left: '3%', right: '4%', top: '5%', bottom: '5%', containLabel: true },
-                xAxis: { type: 'category', data: trendDates, axisLine: { lineStyle: { color: '#3a3f4b' } }, axisLabel: { color: '#a0a0a0' } },
-                yAxis: { type: 'value', axisLine: { show: false }, axisLabel: { color: '#a0a0a0', formatter: '{value}万' }, splitLine: { lineStyle: { color: '#3a3f4b', type: 'dashed' } } },
-                series: trendSeries.map((s, idx) => ({ name: s.name, type: 'line', smooth: true, showSymbol: false, symbol: 'circle', symbolSize: 6, data: s.data, lineStyle: { width: idx === 2 ? 3 : 2, color: s.color }, itemStyle: { color: s.color } }))
-            });
-
-            function updateTrendChart() {
-                const category = document.getElementById('trendCategory').value;
-                const country = document.getElementById('trendCountry').value;
-                const factory = document.getElementById('trendFactory').value;
-                const set = document.getElementById('trendSet').value;
-                const timeRange = document.getElementById('trendTimeRange').value;
-                const startDate = document.getElementById('trendStartDate').value;
-                const endDate = document.getElementById('trendEndDate').value;
-                
-                const filteredSeries = trendSeries.map(s => ({
-                    ...s,
-                    data: s.data.map(v => {
-                        const factor = Math.random() * 0.4 + 0.8;
-                        return Math.round(v * factor);
-                    })
-                }));
-                
-                salesProductTrendChart.setOption({
-                    series: filteredSeries.map((s, idx) => ({ 
-                        name: s.name, 
-                        type: 'line', 
-                        smooth: true, 
-                        showSymbol: false, 
-                        symbol: 'circle', 
-                        symbolSize: 6, 
-                        data: s.data, 
-                        lineStyle: { width: idx === 2 ? 3 : 2, color: s.color }, 
-                        itemStyle: { color: s.color } 
-                    }))
-                });
-            }
-
-            const trendTimeRange = document.getElementById('trendTimeRange');
-            const trendCustomDateInputs = document.getElementById('trendCustomDateInputs');
-            
-            trendTimeRange.addEventListener('change', function() {
-                if (this.value === 'custom') {
-                    trendCustomDateInputs.classList.remove('hidden');
-                } else {
-                    trendCustomDateInputs.classList.add('hidden');
-                }
-                updateTrendChart();
-            });
-
-            document.getElementById('trendCategory').addEventListener('change', updateTrendChart);
-            document.getElementById('trendCountry').addEventListener('change', updateTrendChart);
-            document.getElementById('trendFactory').addEventListener('change', updateTrendChart);
-            document.getElementById('trendSet').addEventListener('change', updateTrendChart);
-            document.getElementById('trendStartDate').addEventListener('change', updateTrendChart);
-            document.getElementById('trendEndDate').addEventListener('change', updateTrendChart);
 
             const provinceRows = [
                 { name: '湖北', value: 520 },
@@ -2065,11 +2129,9 @@
         window.addEventListener('resize', () => {
             fitActivePage();
             if (purchaseTrendChart) purchaseTrendChart.resize();
-            if (purchasePriceTrendChart) purchasePriceTrendChart.resize();
             if (marginMonthlyOverviewChart) marginMonthlyOverviewChart.resize();
             if (salesInited) {
                 if (salesHalfYearChart) salesHalfYearChart.resize();
-                if (salesProductTrendChart) salesProductTrendChart.resize();
             }
             if (inventoryInited) {
                 if (inventoryInOutChart) inventoryInOutChart.resize();
@@ -2079,6 +2141,49 @@
                     inventoryAmountAgingChart.resize();
                 }
             }
+        });
+
+        let salesProductScrollInterval;
+        function startSalesProductScroll() {
+            const container = document.getElementById('salesProductScrollContainer');
+            if (!container) return;
+            stopSalesProductScroll();
+            salesProductScrollInterval = setInterval(() => {
+                container.scrollTop += 1;
+                if (container.scrollTop >= container.scrollHeight - container.clientHeight - 30) {
+                    container.scrollTop = 0;
+                }
+            }, 60);
+        }
+        function stopSalesProductScroll() {
+            if (salesProductScrollInterval) {
+                clearInterval(salesProductScrollInterval);
+                salesProductScrollInterval = null;
+            }
+        }
+
+        let purchaseProductScrollInterval;
+        function startPurchaseProductScroll() {
+            const container = document.getElementById('purchaseProductScrollContainer');
+            if (!container) return;
+            stopPurchaseProductScroll();
+            purchaseProductScrollInterval = setInterval(() => {
+                container.scrollTop += 1;
+                if (container.scrollTop >= container.scrollHeight - container.clientHeight - 30) {
+                    container.scrollTop = 0;
+                }
+            }, 60);
+        }
+        function stopPurchaseProductScroll() {
+            if (purchaseProductScrollInterval) {
+                clearInterval(purchaseProductScrollInterval);
+                purchaseProductScrollInterval = null;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(startSalesProductScroll, 1000);
+            setTimeout(startPurchaseProductScroll, 1000);
         });
     </script>
 </body>
