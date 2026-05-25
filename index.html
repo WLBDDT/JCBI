@@ -446,7 +446,7 @@
                         <option value="today">今天</option>
                         <option value="week">本周</option>
                         <option value="month">本月</option>
-                        <option value="year">今年</option>
+                        <option value="year" selected>今年</option>
                         <option value="custom">自定义</option>
                     </select>
                 </div>
@@ -715,7 +715,7 @@
                                     <option value="today">今天</option>
                                     <option value="week">本周</option>
                                     <option value="month">本月</option>
-                                    <option value="year">今年</option>
+                                <option value="year" selected>今年</option>
                                     <option value="custom">自定义</option>
                                 </select>
                             </div>
@@ -863,7 +863,7 @@
                         <option value="today">今天</option>
                         <option value="week">本周</option>
                         <option value="month">本月</option>
-                        <option value="year">今年</option>
+                        <option value="year" selected>今年</option>
                         <option value="custom">自定义</option>
                     </select>
                 </div>
@@ -1019,7 +1019,7 @@
                                 <option value="today">今天</option>
                                 <option value="week">本周</option>
                                 <option value="month">本月</option>
-                                <option value="year">今年</option>
+                                <option value="year" selected>今年</option>
                                 <option value="custom">自定义</option>
                             </select>
                         </div>
@@ -1405,6 +1405,38 @@
             }
         }
         
+        function formatISODate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function applyDefaultYearRange(selectId, startDateId, endDateId, customInputsId) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            select.value = 'year';
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const start = `${year}-01-01`;
+            const end = formatISODate(now);
+
+            const startInput = document.getElementById(startDateId);
+            const endInput = document.getElementById(endDateId);
+            if (startInput) startInput.value = start;
+            if (endInput) endInput.value = end;
+
+            const customInputs = document.getElementById(customInputsId);
+            if (customInputs) customInputs.classList.add('hidden');
+        }
+
+        applyDefaultYearRange('marginTimeRange', 'marginStartDate', 'marginEndDate', 'marginCustomDateInputs');
+        applyDefaultYearRange('purchaseTimeRange', 'purchaseStartDate', 'purchaseEndDate', 'purchaseCustomDateInputs');
+        applyDefaultYearRange('salesTimeRange', 'salesStartDate', 'salesEndDate', 'customDateInputs');
+        applyDefaultYearRange('priceTrendTimeRange', 'priceTrendStartDate', 'priceTrendEndDate', 'priceTrendCustomDateInputs');
+        applyDefaultYearRange('trendTimeRange', 'trendStartDate', 'trendEndDate', 'trendCustomDateInputs');
+
         switchPage('overview');
 
         // Overview Charts - Removed as overview page no longer has charts
@@ -2002,6 +2034,21 @@
                     customDateInputs.classList.add('hidden');
                 }
                 fitActivePage();
+            });
+        }
+
+        // Margin page time range logic
+        const marginTimeRange = document.getElementById('marginTimeRange');
+        const marginCustomDateInputs = document.getElementById('marginCustomDateInputs');
+        if (marginTimeRange && marginCustomDateInputs) {
+            marginTimeRange.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    marginCustomDateInputs.classList.remove('hidden');
+                } else {
+                    marginCustomDateInputs.classList.add('hidden');
+                }
+                fitActivePage();
+                if (marginMonthlyOverviewChart) marginMonthlyOverviewChart.resize();
             });
         }
 
