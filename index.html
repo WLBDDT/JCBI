@@ -691,23 +691,6 @@
     <div id="page-margin" class="hidden">
         <div class="flex items-center justify-between flex-wrap gap-1.5 mb-1.5">
             <h2 class="text-base font-bold text-white">毛利统计</h2>
-            <div class="flex items-center gap-2">
-                <div class="flex items-center gap-1.5 text-xs">
-                    <span class="text-muted">查询时间</span>
-                    <select id="marginTimeRange" class="h-5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-2 text-accent outline-none text-xs">
-                        <option value="today">今天</option>
-                        <option value="week">本周</option>
-                        <option value="month">本月</option>
-                        <option value="year" selected>今年</option>
-                        <option value="custom">自定义</option>
-                    </select>
-                </div>
-                <div id="marginCustomDateInputs" class="hidden flex items-center gap-1.5">
-                    <input id="marginStartDate" type="date" value="2024-01-01" class="h-5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-2 text-accent outline-none text-xs" />
-                    <span class="text-muted text-xs">-</span>
-                    <input id="marginEndDate" type="date" value="2024-07-31" class="h-5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-2 text-accent outline-none text-xs" />
-                </div>
-            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-1.5 mb-1.5">
@@ -818,23 +801,6 @@
         <div class="flex flex-col gap-2">
             <div class="flex items-center justify-between flex-wrap gap-1.5">
                 <h2 class="text-base font-bold text-white">采购统计</h2>
-                <div class="flex items-center gap-2">
-                    <div class="flex items-center gap-1.5 text-xs">
-                        <span class="text-muted">查询时间</span>
-                        <select id="purchaseTimeRange" class="h-5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1.5 text-accent outline-none text-xs">
-                            <option value="today">今天</option>
-                            <option value="week">本周</option>
-                            <option value="month">本月</option>
-                            <option value="year" selected>今年</option>
-                            <option value="custom">自定义</option>
-                        </select>
-                    </div>
-                    <div id="purchaseCustomDateInputs" class="hidden flex items-center gap-1.5">
-                        <input id="purchaseStartDate" type="date" value="2024-01-01" class="h-5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1.5 text-accent outline-none text-xs" />
-                        <span class="text-muted text-xs">-</span>
-                        <input id="purchaseEndDate" type="date" value="2024-07-31" class="h-5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1.5 text-accent outline-none text-xs" />
-                    </div>
-                </div>
             </div>
         </div>
         <!-- KPI Row -->
@@ -899,7 +865,7 @@
         <!-- Chart Row -->
         <div class="grid grid-cols-1 gap-1.5">
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-1.5">
+            <div class="grid grid-cols-1 gap-1.5">
                 <!-- Trend Chart -->
                 <div class="flex flex-col gap-1.5">
                     <div class="flex items-center gap-2 text-xs text-muted">
@@ -909,192 +875,6 @@
                     <div class="dashboard-card p-2">
                         <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
                         <div id="purchaseTrendChart" style="height:180px"></div>
-                    </div>
-                </div>
-
-                <!-- Purchase List -->
-                <div class="flex flex-col gap-1.5">
-                    <div class="flex items-center justify-between flex-wrap gap-1.5 text-xs text-muted">
-                        <div class="flex items-center gap-2">
-                            <i class="lucide-list text-accent text-xs"></i>
-                            <span>商品采购趋势</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 flex-wrap" id="priceTrendQueryContainer">
-                            <div class="flex items-center gap-1 text-xs">
-                                <span class="text-muted">品类</span>
-                                <select id="priceTrendCategory" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-accent outline-none text-xs">
-                                    <option>全选</option>
-                                    <option>品类0</option>
-                                    <option>品类1</option>
-                                    <option>品类2</option>
-                                </select>
-                            </div>
-                            <div class="flex items-center gap-1 text-xs">
-                                <span class="text-muted">国家</span>
-                                <select id="priceTrendCountry" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-accent outline-none text-xs">
-                                    <option>全选</option>
-                                    <option>澳大利亚</option>
-                                    <option>巴西</option>
-                                    <option>阿根廷</option>
-                                    <option>乌拉圭</option>
-                                    <option>新西兰</option>
-                                </select>
-                            </div>
-                            <div class="flex items-center gap-1 text-xs">
-                                <span class="text-muted">厂号</span>
-                                <select id="priceTrendFactory" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-accent outline-none text-xs">
-                                    <option>全选</option>
-                                    <option>AUS-2024-001</option>
-                                    <option>BRA-2024-001</option>
-                                    <option>ARG-2024-001</option>
-                                </select>
-                            </div>
-                            <div class="flex items-center gap-1 text-xs">
-                                <span class="text-muted">件套</span>
-                                <select id="priceTrendSet" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-accent outline-none text-xs">
-                                    <option>全选</option>
-                                    <option>牛八件套</option>
-                                    <option>牛后六件套</option>
-                                    <option>龟腱/后腱</option>
-                                    <option>单品</option>
-                                </select>
-                            </div>
-                            <div class="flex items-center gap-1 text-xs">
-                                <span class="text-muted">日期</span>
-                                <select id="priceTrendTimeRange" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-accent outline-none text-xs">
-                                    <option value="today">今天</option>
-                                    <option value="week">本周</option>
-                                    <option value="month">本月</option>
-                                <option value="year" selected>今年</option>
-                                    <option value="custom">自定义</option>
-                                </select>
-                            </div>
-                            <div id="priceTrendCustomDateInputs" class="hidden flex items-center gap-1">
-                                <input id="priceTrendStartDate" type="date" value="2024-04-03" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-accent outline-none text-xs" />
-                                <span class="text-muted text-xs">-</span>
-                                <input id="priceTrendEndDate" type="date" value="2024-05-01" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-accent outline-none text-xs" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-card p-2 flex flex-col" style="height: 180px;">
-                        <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
-                        <div class="flex justify-center items-center gap-6 mb-1 pb-1 border-b border-[#2a2f3a]">
-                            <div class="flex items-center gap-2">
-                                <span class="text-muted text-xs">总重量</span>
-                                <span class="text-blue-400 text-sm font-bold">4,410 吨</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-muted text-xs">总金额</span>
-                                <span class="text-accent text-sm font-bold">2,600 万</span>
-                            </div>
-                        </div>
-                        <div class="overflow-auto flex-1" id="purchaseProductScrollContainer" onmouseenter="stopPurchaseProductScroll()" onmouseleave="startPurchaseProductScroll()">
-                            <table class="w-full text-[10px]">
-                                <thead class="bg-[#2d313d] text-accent sticky top-0">
-                                    <tr>
-                                        <th class="p-1.5 border-b border-[#3a3f4b] text-left">海外供应商</th>
-                                        <th class="p-1.5 border-b border-[#3a3f4b] text-left">品类</th>
-                                        <th class="p-1.5 border-b border-[#3a3f4b] text-left">国家</th>
-                                        <th class="p-1.5 border-b border-[#3a3f4b] text-left">厂号</th>
-                                        <th class="p-1.5 border-b border-[#3a3f4b] text-left">件套</th>
-                                        <th class="p-1.5 border-b border-[#3a3f4b] text-right">重量(吨)</th>
-                                        <th class="p-1.5 border-b border-[#3a3f4b] text-right">金额(万)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="hover:bg-white/5">
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted">供应商A</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">品类0</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]"><span class="px-1 py-0.5 rounded text-[9px] bg-blue-500/20 text-blue-400">澳大利亚</span></td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted font-mono">AUS-2024-001</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">牛八件套</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right">1,200</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right text-accent font-bold">720</td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5">
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted">供应商B</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">品类1</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]"><span class="px-1 py-0.5 rounded text-[9px] bg-green-500/20 text-green-400">巴西</span></td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted font-mono">BRA-2024-001</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">牛后六件套</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right">960</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right text-accent font-bold">560</td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5">
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted">供应商C</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">品类2</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]"><span class="px-1 py-0.5 rounded text-[9px] bg-purple-500/20 text-purple-400">阿根廷</span></td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted font-mono">ARG-2024-001</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">龟腱/后腱</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right">880</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right text-accent font-bold">520</td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5">
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted">供应商D</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">品类0</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]"><span class="px-1 py-0.5 rounded text-[9px] bg-orange-500/20 text-orange-400">乌拉圭</span></td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-muted font-mono">URU-2024-001</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b]">单品</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right">720</td>
-                                        <td class="py-1.5 px-1.5 border-b border-[#3a3f4b] text-right text-accent font-bold">420</td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5">
-                                        <td class="py-1.5 px-1.5 text-muted">供应商E</td>
-                                        <td class="py-1.5 px-1.5">品类1</td>
-                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-cyan-500/20 text-cyan-400">新西兰</span></td>
-                                        <td class="py-1.5 px-1.5 text-muted font-mono">NZL-2024-001</td>
-                                        <td class="py-1.5 px-1.5">牛七件套</td>
-                                        <td class="py-1.5 px-1.5 text-right">650</td>
-                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">380</td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5">
-                                        <td class="py-1.5 px-1.5 text-muted">供应商F</td>
-                                        <td class="py-1.5 px-1.5">品类2</td>
-                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-blue-500/20 text-blue-400">澳大利亚</span></td>
-                                        <td class="py-1.5 px-1.5 text-muted font-mono">AUS-2024-002</td>
-                                        <td class="py-1.5 px-1.5">牛五件套</td>
-                                        <td class="py-1.5 px-1.5 text-right">580</td>
-                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">340</td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5">
-                                        <td class="py-1.5 px-1.5 text-muted">供应商G</td>
-                                        <td class="py-1.5 px-1.5">品类0</td>
-                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-green-500/20 text-green-400">巴西</span></td>
-                                        <td class="py-1.5 px-1.5 text-muted font-mono">BRA-2024-002</td>
-                                        <td class="py-1.5 px-1.5">牛腩三件套</td>
-                                        <td class="py-1.5 px-1.5 text-right">520</td>
-                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">260</td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5">
-                                        <td class="py-1.5 px-1.5 text-muted">供应商H</td>
-                                        <td class="py-1.5 px-1.5">品类1</td>
-                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-purple-500/20 text-purple-400">阿根廷</span></td>
-                                        <td class="py-1.5 px-1.5 text-muted font-mono">ARG-2024-002</td>
-                                        <td class="py-1.5 px-1.5">后四件套</td>
-                                        <td class="py-1.5 px-1.5 text-right">460</td>
-                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">270</td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5">
-                                        <td class="py-1.5 px-1.5 text-muted">供应商I</td>
-                                        <td class="py-1.5 px-1.5">品类2</td>
-                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-orange-500/20 text-orange-400">乌拉圭</span></td>
-                                        <td class="py-1.5 px-1.5 text-muted font-mono">URU-2024-002</td>
-                                        <td class="py-1.5 px-1.5">单品</td>
-                                        <td class="py-1.5 px-1.5 text-right">380</td>
-                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">210</td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5">
-                                        <td class="py-1.5 px-1.5 text-muted">供应商J</td>
-                                        <td class="py-1.5 px-1.5">品类0</td>
-                                        <td class="py-1.5 px-1.5"><span class="px-1 py-0.5 rounded text-[9px] bg-cyan-500/20 text-cyan-400">新西兰</span></td>
-                                        <td class="py-1.5 px-1.5 text-muted font-mono">NZL-2024-002</td>
-                                        <td class="py-1.5 px-1.5">牛八件套</td>
-                                        <td class="py-1.5 px-1.5 text-right">520</td>
-                                        <td class="py-1.5 px-1.5 text-right text-accent font-bold">310</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1108,53 +888,7 @@
                     </div>
                     <div class="dashboard-card p-2">
                         <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
-                        <div class="flex justify-center items-center gap-3 mb-1 pb-1 border-b border-[#2a2f3a]">
-                            <span class="text-muted text-xs">未付总金额</span>
-                            <span class="text-blue-400 text-sm font-bold">1,860 万</span>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-[10px]">
-                                <thead>
-                                    <tr class="text-muted border-b border-[#2a2f3a]">
-                                        <th class="text-left py-2 px-3 font-medium">合同号</th>
-                                        <th class="text-left py-2 px-3 font-medium">收款公司</th>
-                                        <th class="text-left py-2 px-3 font-medium">付款款项</th>
-                                        <th class="text-right py-2 px-3 font-medium">预计付款金额(万)</th>
-                                        <th class="text-left py-2 px-3 font-medium">预计付款时间</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-b border-[#2a2f3a]/50 hover:bg-[#1a1d24]">
-                                        <td class="py-2 px-3 text-accent">CGHT-2024-001</td>
-                                        <td class="py-2 px-3">澳大利亚肉联厂</td>
-                                        <td class="py-2 px-3">预付款</td>
-                                        <td class="py-2 px-3 text-right text-blue-400">500</td>
-                                        <td class="py-2 px-3">2024-01-15</td>
-                                    </tr>
-                                    <tr class="border-b border-[#2a2f3a]/50 hover:bg-[#1a1d24]">
-                                        <td class="py-2 px-3 text-accent">CGHT-2024-002</td>
-                                        <td class="py-2 px-3">巴西供应商</td>
-                                        <td class="py-2 px-3">尾款</td>
-                                        <td class="py-2 px-3 text-right text-blue-400">380</td>
-                                        <td class="py-2 px-3">2024-01-20</td>
-                                    </tr>
-                                    <tr class="border-b border-[#2a2f3a]/50 hover:bg-[#1a1d24]">
-                                        <td class="py-2 px-3 text-accent">CGHT-2024-003</td>
-                                        <td class="py-2 px-3">阿根廷牛肉公司</td>
-                                        <td class="py-2 px-3">全款</td>
-                                        <td class="py-2 px-3 text-right text-blue-400">980</td>
-                                        <td class="py-2 px-3">2024-01-25</td>
-                                    </tr>
-                                    <tr class="hover:bg-[#1a1d24]">
-                                        <td class="py-2 px-3 text-accent">CGHT-2024-004</td>
-                                        <td class="py-2 px-3">新西兰牧场</td>
-                                        <td class="py-2 px-3">预付款</td>
-                                        <td class="py-2 px-3 text-right text-blue-400">420</td>
-                                        <td class="py-2 px-3">2024-02-01</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <div id="paymentScheduleChart" style="height:200px"></div>
                     </div>
                 </div>
 
@@ -1222,29 +956,6 @@
     <div id="page-sales" class="hidden">
         <div class="flex items-center justify-between flex-wrap gap-1.5 mb-1.5">
             <h2 class="text-lg font-bold text-white">销售统计</h2>
-            <div class="flex items-center gap-2">
-                <div class="flex items-center gap-1.5 text-xs">
-                    <span class="text-muted">查询时间</span>
-                    <select id="salesTimeRange" class="h-5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-2 text-accent outline-none text-xs">
-                        <option value="today">今天</option>
-                        <option value="week">本周</option>
-                        <option value="month">本月</option>
-                        <option value="year" selected>今年</option>
-                        <option value="custom">自定义</option>
-                    </select>
-                </div>
-                <div id="customDateInputs" class="hidden flex items-center gap-1.5">
-                    <div class="flex items-center gap-1.5 text-xs">
-                        <span class="text-muted">开始时间</span>
-                        <input id="salesStartDate" type="date" value="2024-01-01" class="h-5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-2 text-accent outline-none text-xs" />
-                    </div>
-                    <span class="text-muted">-</span>
-                    <div class="flex items-center gap-1.5 text-xs">
-                        <span class="text-muted">结束时间</span>
-                        <input id="salesEndDate" type="date" value="2024-07-31" class="h-5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-2 text-accent outline-none text-xs" />
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-1.5 mb-1.5">
             <div class="dashboard-card p-2 flex flex-col gap-1">
@@ -1315,7 +1026,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-1.5 mb-1.5">
+        <div class="grid grid-cols-1 gap-1.5 mb-1.5">
             <div class="flex flex-col gap-1.5">
                 <div class="flex items-center gap-2 text-xs text-muted mb-0.5">
                     <i class="lucide-bar-chart-3 text-accent text-xs"></i>
@@ -1324,197 +1035,6 @@
                 <div class="dashboard-card p-2">
                     <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
                     <div id="salesHalfYearChart" style="height:180px"></div>
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-1.5">
-                <div class="flex items-center justify-between flex-wrap gap-1.5 text-xs text-muted mb-0.5">
-                    <div class="flex items-center gap-2">
-                        <i class="lucide-package text-accent text-xs"></i>
-                        <span>商品销售趋势</span>
-                    </div>
-                    <div class="flex items-center gap-1.5 flex-wrap" id="trendQueryContainer">
-                        <div class="flex items-center gap-1 text-xs">
-                            <span class="text-accent font-medium">品类：</span>
-                            <select id="trendCategory" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-white outline-none text-xs">
-                                <option>全选</option>
-                                <option>品类0</option>
-                                <option>品类1</option>
-                                <option>品类2</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-1 text-xs">
-                            <span class="text-accent font-medium">国家：</span>
-                            <select id="trendCountry" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-white outline-none text-xs">
-                                <option>全选</option>
-                                <option>澳大利亚</option>
-                                <option>巴西</option>
-                                <option>阿根廷</option>
-                                <option>乌拉圭</option>
-                                <option>新西兰</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-1 text-xs">
-                            <span class="text-accent font-medium">厂号：</span>
-                            <select id="trendFactory" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-white outline-none text-xs">
-                                <option>全选</option>
-                                <option>AUS-2024-001</option>
-                                <option>AUS-2024-002</option>
-                                <option>BRA-2024-001</option>
-                                <option>ARG-2024-001</option>
-                                <option>URU-2024-001</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-1 text-xs">
-                            <span class="text-accent font-medium">件套：</span>
-                            <select id="trendSet" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-white outline-none text-xs">
-                                <option>全选</option>
-                                <option>牛八件套</option>
-                                <option>牛后六件套</option>
-                                <option>龟腱/后腱</option>
-                                <option>后四件套</option>
-                                <option>牛七件套</option>
-                                <option>牛五件套</option>
-                                <option>牛腩三件套</option>
-                                <option>单品</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-1 text-xs">
-                            <span class="text-accent font-medium">日期：</span>
-                            <select id="trendTimeRange" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-white outline-none text-xs">
-                                <option value="today">今天</option>
-                                <option value="week">本周</option>
-                                <option value="month">本月</option>
-                                <option value="year" selected>今年</option>
-                                <option value="custom">自定义</option>
-                            </select>
-                        </div>
-                        <div id="trendCustomDateInputs" class="hidden flex items-center gap-1">
-                            <input id="trendStartDate" type="date" value="2024-04-03" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-accent outline-none text-xs" />
-                            <span class="text-muted">-</span>
-                            <input id="trendEndDate" type="date" value="2024-05-01" class="h-4.5 rounded-md bg-[#14161d] border border-[#3a3f4b] px-1 text-accent outline-none text-xs" />
-                        </div>
-                    </div>
-                </div>
-                <div class="dashboard-card p-2 flex flex-col" style="height: 180px;">
-                    <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
-                    <div class="flex justify-center items-center gap-6 mb-1 pb-1 border-b border-[#2a2f3a]">
-                        <div class="flex items-center gap-2">
-                            <span class="text-muted text-xs">总重量</span>
-                            <span class="text-blue-400 text-sm font-bold">3,850 吨</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-muted text-xs">总金额</span>
-                            <span class="text-accent text-sm font-bold">2,280 万</span>
-                        </div>
-                    </div>
-                    <div class="overflow-auto flex-1" id="salesProductScrollContainer" onmouseenter="stopSalesProductScroll()" onmouseleave="startSalesProductScroll()">
-                        <table class="w-full text-[10px]">
-                            <thead class="bg-[#2d313d] text-accent sticky top-0">
-                                <tr>
-                                    <th class="p-2 border-b border-[#3a3f4b] text-left">客户名称</th>
-                                    <th class="p-2 border-b border-[#3a3f4b] text-left">品类</th>
-                                    <th class="p-2 border-b border-[#3a3f4b] text-left">国家</th>
-                                    <th class="p-2 border-b border-[#3a3f4b] text-left">厂号</th>
-                                    <th class="p-2 border-b border-[#3a3f4b] text-left">件套</th>
-                                    <th class="p-2 border-b border-[#3a3f4b] text-right">重量(吨)</th>
-                                    <th class="p-2 border-b border-[#3a3f4b] text-right">金额(万)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="hover:bg-white/5">
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商A</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腱</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">澳大利亚</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">AUS-2024-001</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛八件套</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">850</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">510</td>
-                                </tr>
-                                <tr class="hover:bg-white/5">
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商B</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腩</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">巴西</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">BRA-2024-001</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腩三件套</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">920</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">460</td>
-                                </tr>
-                                <tr class="hover:bg-white/5">
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商C</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛霖</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">阿根廷</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">ARG-2024-001</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">单品</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">780</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">429</td>
-                                </tr>
-                                <tr class="hover:bg-white/5">
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商D</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腱</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">乌拉圭</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">URU-2024-001</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">龟腱/后腱</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">650</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">390</td>
-                                </tr>
-                                <tr class="hover:bg-white/5">
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商E</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腱</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">新西兰</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">NZL-2024-001</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛五件套</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">650</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">491</td>
-                                </tr>
-                                <tr class="hover:bg-white/5">
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商F</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛霖</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">澳大利亚</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">AUS-2024-002</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛七件套</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">520</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">312</td>
-                                </tr>
-                                <tr class="hover:bg-white/5">
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商G</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腩</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">阿根廷</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">ARG-2024-002</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">后四件套</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">480</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">240</td>
-                                </tr>
-                                <tr class="hover:bg-white/5">
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商H</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腱</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">巴西</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">BRA-2024-002</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛后六件套</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">720</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">432</td>
-                                </tr>
-                                <tr class="hover:bg-white/5">
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商I</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛霖</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">乌拉圭</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">URU-2024-002</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">单品</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">380</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">209</td>
-                                </tr>
-                                <tr class="hover:bg-white/5">
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">供应商J</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腩</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">新西兰</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">NZL-2024-002</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-muted">牛腩三件套</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">560</td>
-                                    <td class="py-2 px-1 border-b border-[#3a3f4b] text-right text-accent">280</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1527,53 +1047,7 @@
                 </div>
                 <div class="dashboard-card p-2">
                     <div class="card-corner-tr"></div><div class="card-corner-bl"></div>
-                    <div class="flex justify-center items-center gap-3 mb-1 pb-1 border-b border-[#2a2f3a]">
-                        <span class="text-muted text-xs">未收总金额</span>
-                        <span class="text-blue-400 text-sm font-bold">320 万</span>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-[10px]">
-                            <thead>
-                                <tr class="text-muted border-b border-[#2a2f3a]">
-                                    <th class="text-left py-2 px-3 font-medium">合同号</th>
-                                    <th class="text-left py-2 px-3 font-medium">付款公司</th>
-                                    <th class="text-left py-2 px-3 font-medium">收款款项</th>
-                                    <th class="text-right py-2 px-3 font-medium">预计收款金额(万)</th>
-                                    <th class="text-left py-2 px-3 font-medium">预计收款时间</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-b border-[#2a2f3a]/50 hover:bg-[#1a1d24]">
-                                    <td class="py-2 px-3 text-accent">XSHT-2024-001</td>
-                                    <td class="py-2 px-3">上海食品公司</td>
-                                    <td class="py-2 px-3">货款</td>
-                                    <td class="py-2 px-3 text-right text-blue-400">120</td>
-                                    <td class="py-2 px-3">2024-02-10</td>
-                                </tr>
-                                <tr class="border-b border-[#2a2f3a]/50 hover:bg-[#1a1d24]">
-                                    <td class="py-2 px-3 text-accent">XSHT-2024-002</td>
-                                    <td class="py-2 px-3">北京餐饮集团</td>
-                                    <td class="py-2 px-3">尾款</td>
-                                    <td class="py-2 px-3 text-right text-blue-400">85</td>
-                                    <td class="py-2 px-3">2024-02-15</td>
-                                </tr>
-                                <tr class="border-b border-[#2a2f3a]/50 hover:bg-[#1a1d24]">
-                                    <td class="py-2 px-3 text-accent">XSHT-2024-003</td>
-                                    <td class="py-2 px-3">广州批发商</td>
-                                    <td class="py-2 px-3">预付款</td>
-                                    <td class="py-2 px-3 text-right text-blue-400">65</td>
-                                    <td class="py-2 px-3">2024-02-20</td>
-                                </tr>
-                                <tr class="hover:bg-[#1a1d24]">
-                                    <td class="py-2 px-3 text-accent">XSHT-2024-004</td>
-                                    <td class="py-2 px-3">深圳零售商</td>
-                                    <td class="py-2 px-3">货款</td>
-                                    <td class="py-2 px-3 text-right text-blue-400">50</td>
-                                    <td class="py-2 px-3">2024-02-25</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <div id="collectionScheduleChart" style="height:200px"></div>
                 </div>
             </div>
 
@@ -1935,7 +1409,7 @@
 
         // Purchase Page Charts - Initialized on page switch
         let purchaseInited = false;
-        let purchaseTrendChart;
+        let purchaseTrendChart, paymentScheduleChart;
         function initPurchaseCharts() {
             purchaseInited = true;
 
@@ -1953,6 +1427,67 @@
                 series: [
                     { name: '采购金额', type: 'bar', barWidth: '35%', data: [1200, 1350, 1280, 1420, 1560, 1380], itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#4c8bf5' }, { offset: 1, color: '#2d5cb8' }]) } },
                     { name: '采购重量', type: 'line', yAxisIndex: 1, data: [8500, 9200, 8800, 9800, 10500, 9200], itemStyle: { color: '#e3b341' }, lineStyle: { width: 3 }, smooth: true }
+                ]
+            });
+
+            paymentScheduleChart = echarts.init(document.getElementById('paymentScheduleChart'));
+            paymentScheduleChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}: {c}万 ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 10,
+                    top: 'center',
+                    textStyle: { color: '#a0a0a0', fontSize: 11 }
+                },
+                series: [
+                    {
+                        name: '付款计划',
+                        type: 'pie',
+                        radius: ['45%', '70%'],
+                        center: ['65%', '50%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 6,
+                            borderColor: '#1a1d24',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: true,
+                            position: 'outside',
+                            color: '#a0a0a0',
+                            fontSize: 11,
+                            formatter: '{b}\n{c}万'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 12,
+                                fontWeight: 'bold'
+                            },
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 180, 255, 0.5)'
+                            }
+                        },
+                        labelLine: {
+                            show: true,
+                            length: 15,
+                            length2: 10,
+                            lineStyle: {
+                                color: '#4c8bf5'
+                            }
+                        },
+                        data: [
+                            { value: 920, name: '预付款', itemStyle: { color: '#4c8bf5' } },
+                            { value: 380, name: '尾款', itemStyle: { color: '#3ba272' } },
+                            { value: 560, name: '全款', itemStyle: { color: '#e3b341' } }
+                        ]
+                    }
                 ]
             });
         }
@@ -2163,6 +1698,67 @@
                 }).join('');
             }
 
+            const collectionScheduleChart = echarts.init(document.getElementById('collectionScheduleChart'));
+            collectionScheduleChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}: {c}万 ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 10,
+                    top: 'center',
+                    textStyle: { color: '#a0a0a0', fontSize: 11 }
+                },
+                series: [
+                    {
+                        name: '收款计划',
+                        type: 'pie',
+                        radius: ['45%', '70%'],
+                        center: ['65%', '50%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 6,
+                            borderColor: '#1a1d24',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: true,
+                            position: 'outside',
+                            color: '#a0a0a0',
+                            fontSize: 11,
+                            formatter: '{b}\n{c}万'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 12,
+                                fontWeight: 'bold'
+                            },
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 180, 255, 0.5)'
+                            }
+                        },
+                        labelLine: {
+                            show: true,
+                            length: 15,
+                            length2: 10,
+                            lineStyle: {
+                                color: '#4c8bf5'
+                            }
+                        },
+                        data: [
+                            { value: 115, name: '预收款', itemStyle: { color: '#4c8bf5' } },
+                            { value: 85, name: '尾款', itemStyle: { color: '#3ba272' } },
+                            { value: 120, name: '全款', itemStyle: { color: '#e3b341' } }
+                        ]
+                    }
+                ]
+            });
+
             const salesProductRows = [
                 { country: '澳大利亚', factory: 'AUS-2024-001', set: '牛八件套', amount: 520, margin: 28.5 },
                 { country: '巴西', factory: 'BRA-2024-001', set: '牛后六件套', amount: 460, margin: 26.2 },
@@ -2243,23 +1839,30 @@
             inventoryWarehouseChart.setOption({
                 backgroundColor: 'transparent',
                 tooltip: { trigger: 'item', formatter: '{b}: {c}吨 ({d}%)' },
-                legend: { bottom: 0, textStyle: { color: '#a0a0a0' }, itemWidth: 12, itemHeight: 12 },
+                legend: { 
+                    orient: 'vertical',
+                    left: 10,
+                    top: 'center',
+                    textStyle: { color: '#a0a0a0', fontSize: 11 }, 
+                    itemWidth: 12, 
+                    itemHeight: 12 
+                },
                 series: [{
                     name: '仓库分布',
                     type: 'pie',
-                    radius: ['40%', '70%'],
-                    center: ['50%', '50%'],
+                    radius: ['45%', '70%'],
+                    center: ['65%', '50%'],
                     label: {
                         show: true,
                         position: 'outside',
-                        color: '#ffffff',
+                        color: '#a0a0a0',
                         fontSize: 11,
-                        formatter: '{b}\n{c}吨\n{d}%'
+                        formatter: '{b}\n{c}吨'
                     },
                     labelLine: {
                         show: true,
                         lineStyle: {
-                            color: '#a0a0a0'
+                            color: '#4c8bf5'
                         }
                     },
                     data: [
@@ -2268,10 +1871,7 @@
                         { value: 120, name: '上海港堆场', itemStyle: { color: '#3ba272' } },
                         { value: 95, name: '洋山同盛仓', itemStyle: { color: '#9a60b4' } },
                         { value: 85, name: '上海久月久冷库', itemStyle: { color: '#ea7ccc' } },
-                        { value: 70, name: '上海创满', itemStyle: { color: '#63b3ed' } },
-                        { value: 60, name: '南京万纬仓', itemStyle: { color: '#ff8b52' } },
-                        { value: 55, name: '上海久凌冷库', itemStyle: { color: '#56d0c0' } },
-                        { value: 40, name: '飞鸿仓', itemStyle: { color: '#8a6df2' } }
+                        { value: 225, name: '其他', itemStyle: { color: '#6b7280' } }
                     ]
                 }]
             });
